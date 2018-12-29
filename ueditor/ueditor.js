@@ -1,0 +1,227 @@
+
+
+//实例化编辑器
+//建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+let ue = UE.getEditor('editor');
+let article_data = [];
+
+function getContent() {
+    var arr = [];
+    arr.push("使用editor.getContent()方法可以获得编辑器的内容");
+    arr.push("内容为：");
+    arr.push(UE.getEditor('editor').getContent());
+    alert(arr.join("\n"));
+}
+let createNewArticle = function () {
+    let article_form = document.getElementById('article_form');
+    article_form.id.value = ""
+    article_form.title.value = ""
+    UE.getEditor('editor').setContent("");
+}
+/**
+ * 创建文章列表
+ * @param {array} data 
+ */
+let createLiData = function (data) {
+    let i = 0, str = '', arr = []
+    if (data.length > 0) {
+        while (data[i]) {
+            arr.push(Number(data[i].id))
+
+            str += '<li onClick="articleLiOnClick(' + data[i].id + ')" title="' + data[i].title + " | " + data[i].createtime + '">'
+            str += data[i].title
+            str += '</li>'
+            i++
+        }
+    } else {
+        str = '<p style="text-align: center;">-----没有文章了!-----</p>'
+    }
+
+    //保存最大id到cookie
+    createMaxArticleIdToCookie(arr)
+    //文章数据赋值全局变量
+    article_data = data
+    //创建li数据列表
+    document.getElementById('article_lst').innerHTML = str;
+}
+/**
+ * 保存最大id到cookie
+ * @param {array} arr 
+ */
+let createMaxArticleIdToCookie = function (arr) {
+    if (arr.length > 0) {
+        //找出最大的id
+        let max_id = Math.max.apply(Math, arr)
+        let article_id = getCookie('article_id')
+        //保存最大id时进行判断，在分页的时候最大的id不一定是文章的最大id
+        if (max_id > article_id) {
+            setCookie('article_id', max_id)
+        }
+    } else {
+        setCookie('article_id', 0)
+    }
+
+}
+/**
+ * 获取点击的文章具体内容
+ * @param {number} e 
+ */
+let articleLiOnClick = function (e) {
+    let i = 0
+    while (article_data[i]) {
+        if (article_data[i].id == e) {
+            //调用显示文章函数
+            showArticleContent(article_data[i])
+            break
+        }
+        i++
+    }
+}
+/**
+ * 显示文章的具体内容
+ * @param {object} object 
+ */
+let showArticleContent = function (object) {
+    if (object.article == "") {
+        alert('文章丢失了！')
+    }
+    let article_form = document.getElementById('article_form');
+    article_form.id.value = object.id
+    article_form.title.value = object.title
+    //百度编辑器写入内容函数
+    UE.getEditor('editor').setContent(object.article);
+}
+/**
+ * 获取数据列表
+ */
+let getData = function () {
+    let obj = {
+        url: 'http://localhost:8899/lst',
+        data: {},
+        method: 'GET'
+    }
+    //异步t提交函数
+    requestUtil(obj, lstData)
+}
+/**
+ * 提交表单函数
+ */
+let postData = function () {
+    //获取表单数据
+    let article_form = document.getElementById('article_form');
+    if (article_form.title.value == "" || article_form.article.value == "") {
+        alert('标题和内容不能为空！')
+        return
+    }
+    //文章id
+    let article_id = 0
+    //如果表单中有文章的id表示显示的文章，没有代表新建文章
+    if (article_form.id.value) {
+        article_id = article_form.id.value
+    } else {
+        article_id = Number(getCookie('article_id')) + 1
+    }
+    let obj = {
+        url: 'http://localhost:8899/add',
+        data: {
+            id: article_id,
+            title: article_form.title.value,
+            article: article_form.article.value
+        },
+        method: 'POST'
+    }
+    //异步t提交函数
+    requestUtil(obj, addOrUpdate)
+}
+/**
+ * 获取的数据对象
+ * @param {object} e 
+ */
+let lstData = function (e) {
+    if (e.code == 200) {
+        createLiData(e.data)
+    }
+}
+/**
+ * 添加或者更新操作返回的数据
+ * @param {*} e 
+ */
+let addOrUpdate = function (e) {
+    if (e.code == 200) {
+        alert(e.massage)
+        let i = 0, is_add = true
+        while (article_data[i]) {
+            if (article_data[i].id == e.data[0].id) {
+                //更新文章内容
+                article_data[i] = e.data[0]
+                is_add = false
+                break
+            }
+            i++
+        }
+        if (is_add) {
+            let article_form = document.getElementById('article_form');
+            //给表单赋值文章id
+            article_form.id.value = e.data[0].id
+            //给数据添加数据
+            article_data.push(e.data[0])
+        }
+        createLiData(article_data)
+    }
+}
+/**
+ * 
+ * @param {object} obj 
+ * @param {function} fun 
+ */
+let requestUtil = function (obj, fun) {
+    $.ajax({
+        url: obj.url,
+        data: obj.data,
+        method: obj.method,
+        type: 'JSON',
+        success: function (res) {
+            //对字符串进行转换
+            fun(JSON.parse(res))
+        },
+        error: function () {
+            console.log('error')
+        }
+    })
+}
+/**
+ * 设置cookie
+ * @param {text} name 
+ * @param {object} value 
+ */
+let setCookie = function (name, value) {
+    let Days = 10;
+    let exp = new Date();
+    exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);
+    document.cookie =
+        name + "=" + escape(value) + ";expires=" + exp.toGMTString();
+}
+/**
+ * 获取cookie值
+ * @param {text} name 
+ */
+let getCookie = function (name) {
+    let arr,
+        reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+    if ((arr = document.cookie.match(reg))) return unescape(arr[2]);
+    else return null;
+}
+/**
+ * 删除cookie值
+ * @param {text} name 
+ */
+let delCookie = function (name) {
+    let exp = new Date();
+    exp.setTime(exp.getTime() - 1);
+    let cval = getCookie(name);
+    if (cval != null)
+        document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();
+}
+
+//页面初始化调用函数
+getData()

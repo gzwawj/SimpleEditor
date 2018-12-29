@@ -1,0 +1,79 @@
+* {
+    margin: 0;
+    padding: 0;
+    list-style:none;
+}
+body{
+    background: #f0f0f0;
+}
+/*文章列表区*/
+#left-box {
+    position: fixed;
+    padding: 5px;
+    top: 100px;
+    left: 20px;
+    width: 150px;
+    background: #fff;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+#left-box li{
+    margin: 2px 0;
+    color: rgb(128, 178, 243);
+    background: rgb(244, 245, 196);
+    border-bottom: 1px dotted #333333;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: keep-all;
+    overflow: hidden;
+}
+#left-box li:hover{
+    margin-left: 10px;
+    color: #232323;
+    cursor: pointer;
+}
+
+/*中间编辑区*/
+#centor-box {
+    position: fixed;
+    margin: auto;
+    padding: 10px;
+    top: 10px;
+    left: 25%;
+    right: 25%;
+    background: #fff;
+    box-sizing: border-box;
+}
+#centor-box .title{
+    text-align: center;
+}
+#centor-box input{
+    height: 48px;
+    width: 100%;
+    line-height: 48px;
+    font-size: 28px;
+    border: 0;
+    background: rgb(225, 243, 192)
+}
+#centor-box #editor{
+    width: 100%;
+}
+/*右边功能区*/
+#right-box {
+    position: fixed;
+    padding: 5px;
+    top: 100px;
+    right: 20px;
+    background: #fff;
+    box-sizing: border-box;
+}
+#right-box li{
+    margin: 5px;
+    padding: 5px;
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+    border-radius: 10px;
+    background: #ab90eb;
+    cursor: pointer;
+}
