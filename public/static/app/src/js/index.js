@@ -1,7 +1,7 @@
 define(function (require, exports, module) {
     let $ = require('jquery')
-    let Cookie=require('./cookie')
-    let cookie_model=new Cookie()
+    let cookie=require('./cookie')
+    
     let article_data = [];
     
     function getContent() {
@@ -11,12 +11,17 @@ define(function (require, exports, module) {
         arr.push(UE.getEditor('editor').getContent());
         alert(arr.join("\n"));
     }
+    /**
+     * 创建文章，清空表单中的内容
+     */
     let createNewArticle = function () {
         let article_form = document.getElementById('article_form');
         article_form.id.value = ""
         article_form.title.value = ""
         UE.getEditor('editor').setContent("");
     }
+
+    
     /**
      * 创建文章列表
      * @param {array} data 
@@ -94,13 +99,15 @@ define(function (require, exports, module) {
      * 获取数据列表
      */
     let getData = function () {
-        // let obj = {
-        //     url: 'http://localhost:8899/lst',
-        //     data: {},
-        //     method: 'GET'
-        // }
-        // //异步t提交函数
-        // requestUtil(obj, lstData)
+
+        cookie.setCookie('aaaaaa','bbbbbbbbbb')
+        let obj = {
+            url: 'http://localhost:8899/lst',
+            data: {},
+            method: 'GET'
+        }
+        //异步t提交函数
+        requestUtil(obj, lstData)
     }
     /**
      * 提交表单函数
