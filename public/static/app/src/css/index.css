@@ -6,7 +6,7 @@
   list-style: none; }
 
 body {
-  background: #f0f0f0; }
+  background: #fafafa; }
 
 /*文章列表区*/
 #left-box {
@@ -14,13 +14,13 @@ body {
   padding: 5px;
   top: 100px;
   bottom: 100px;
-  left: 20px;
-  width: 150px;
-  background: #fff;
-  box-sizing: border-box;
-  overflow: hidden; }
+  left: 0px;
+  width: 10px;
+  background: #999999;
+  box-sizing: border-box; }
   #left-box:hover {
-    width: 300px; }
+    width: 300px;
+    overflow-y: scroll; }
   #left-box li {
     margin: 2px 0;
     color: #80b2f3;
@@ -30,7 +30,7 @@ body {
     white-space: nowrap;
     word-break: keep-all;
     overflow: hidden; }
-    #left-box li :hover {
+    #left-box li:hover {
       margin-left: 10px;
       color: #232323;
       cursor: pointer; }
@@ -39,32 +39,49 @@ body {
 #centor-box {
   margin: auto;
   width: 1200px;
-  background: #fff;
   box-sizing: border-box; }
   #centor-box #centor-top {
-    width: 100px;
-    height: 100px;
-    border: 1px solid red; }
-  #centor-box #centor-bot .title {
-    text-align: center; }
-  #centor-box #centor-bot input {
-    height: 48px;
-    width: 100%;
-    line-height: 48px;
-    font-size: 28px;
-    border: 0;
-    background: #e1f3c0; }
-  #centor-box #centor-bot #editor {
-    width: 100%; }
+    position: fixed;
+    top: 0px;
+    height: 5px;
+    width: 1200px;
+    background: #999999;
+    overflow: hidden; }
+    #centor-box #centor-top:hover {
+      height: 100px; }
+  #centor-box #centor-bot {
+    padding-top: 100px; }
+    #centor-box #centor-bot .title {
+      text-align: center; }
+    #centor-box #centor-bot input {
+      height: 24px;
+      width: 100%;
+      line-height: 24px;
+      font-size: 16px;
+      text-align: center;
+      border: 0;
+      border-bottom: 1px solid #f0f0f0; }
+      #centor-box #centor-bot input:nth-child(2n+1) {
+        background: #999999; }
+    #centor-box #centor-bot .editbox {
+      height: 580px;
+      width: 100%;
+      background: #999999; }
+      #centor-box #centor-bot .editbox #editor {
+        width: 100%; }
 
 /*右边功能区*/
 #right-box {
   position: fixed;
   padding: 5px;
   top: 100px;
-  right: 20px;
-  background: #fff;
+  bottom: 100px;
+  right: 0px;
+  width: 10px;
+  background: #999999;
   box-sizing: border-box; }
+  #right-box:hover {
+    width: 300px; }
   #right-box li {
     margin: 5px;
     padding: 5px;

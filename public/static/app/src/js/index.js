@@ -11,15 +11,7 @@ define(function (require, exports, module) {
         arr.push(UE.getEditor('editor').getContent());
         alert(arr.join("\n"));
     }
-    /**
-     * 创建文章，清空表单中的内容
-     */
-    let createNewArticle = function () {
-        let article_form = document.getElementById('article_form');
-        article_form.id.value = ""
-        article_form.title.value = ""
-        UE.getEditor('editor').setContent("");
-    }
+    
 
     
     /**
@@ -27,19 +19,7 @@ define(function (require, exports, module) {
      * @param {array} data 
      */
     let createLiData = function (data) {
-        let i = 0, str = '', arr = []
-        if (data.length > 0) {
-            while (data[i]) {
-                arr.push(Number(data[i].id))
-
-                str += '<li onClick="articleLiOnClick(' + data[i].id + ')" title="' + data[i].title + " | " + data[i].createtime + '">'
-                str += data[i].title
-                str += '</li>'
-                i++
-            }
-        } else {
-            str = '<p style="text-align: center;">-----没有文章了!-----</p>'
-        }
+        
 
         //保存最大id到cookie
         createMaxArticleIdToCookie(arr)
@@ -86,14 +66,7 @@ define(function (require, exports, module) {
      * @param {object} object 
      */
     let showArticleContent = function (object) {
-        if (object.article == "") {
-            alert('文章丢失了！')
-        }
-        let article_form = document.getElementById('article_form');
-        article_form.id.value = object.id
-        article_form.title.value = object.title
-        //百度编辑器写入内容函数
-        UE.getEditor('editor').setContent(object.article);
+       
     }
     /**
      * 获取数据列表
@@ -181,19 +154,7 @@ define(function (require, exports, module) {
      * @param {function} fun 
      */
     let requestUtil = function (obj, fun) {
-        $.ajax({
-            url: obj.url,
-            data: obj.data,
-            method: obj.method,
-            type: 'JSON',
-            success: function (res) {
-                //对字符串进行转换
-                fun(JSON.parse(res))
-            },
-            error: function () {
-                console.log('error')
-            }
-        })
+        
     }
     
     //页面初始化调用函数

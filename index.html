@@ -16,27 +16,46 @@
 <body>
     <div id="left-box">
         <ul id='article_lst'>
-            aaa
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
         </ul>
     </div>
     <div id="centor-box">
         <div id="centor-top">
-            adsf
+            <table>
+                <tr>
+                    <td>开发语言: </td>
+                    <td><input type="radio" name="a" value="php">php</td>
+                    <td><input type="radio" name="a" value="nodejs">nodejs</td>
+                    <td><input type="radio" name="a" value="python">python</td>
+                </tr>
+                <tr>
+                    <td>数据库：</td>
+                    <td><input type="radio" name="b" value="mysql">mysql</td>
+                    <td><input type="radio" name="b" value="mongodb">mongodb</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>编辑器：</td>
+                    <td><input type="radio" name="c" value="ueditor">ueditor</td>
+                    <td><input type="radio" name="c" value="marked">marked</td>
+                    <td><input type="radio" name="c" value="md">md文件</td>
+                </tr>
+            </table>
         </div>
         <div id="centor-bot">
-            <h1>
-                <p class='title'>html编辑器</p>
-            </h1>
-            <hr>
             <form id='article_form' action="http://localhost:8899/add" method='POST'>
                 <input type="hidden" name="id" value="">
-                <lebel>文章标题：</lebel>
-                <br>
+
                 <input type="text" name="title" placeholder="请输入标题" value="">
+                <input type="text" name="categories" placeholder="分类" value="">
+                <input type="text" name="keywords" placeholder="关键字" value="">
+                <div class="editbox">
+                    <sc<script id="editor" name="content" type="text/plain"></script>
+                        <!-- <textarea name="article" id="editor"></textarea> -->
+                </div>
                 <br>
-                <lebel>文章内容：</lebel>
-                <br>
-                <textarea name="article" id="editor"></textarea>
             </form>
         </div>
     </div>
