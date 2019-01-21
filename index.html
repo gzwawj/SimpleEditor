@@ -16,7 +16,7 @@
 <body>
     <div id="left-box">
         <ul id='article_lst'>
-            <li>1</li>
+            <li value="123">1</li>
             <li>2</li>
             <li>3</li>
         </ul>
@@ -26,21 +26,28 @@
             <table>
                 <tr>
                     <td>开发语言: </td>
-                    <td><input type="radio" name="a" value="php">php</td>
-                    <td><input type="radio" name="a" value="nodejs">nodejs</td>
-                    <td><input type="radio" name="a" value="python">python</td>
+                    <td><input type="radio" name="pro" value="php">php</td>
+                    <td><input type="radio" name="pro" value="nodejs">nodejs</td>
+                    <td><input type="radio" name="pro" value="python">python</td>
                 </tr>
                 <tr>
                     <td>数据库：</td>
-                    <td><input type="radio" name="b" value="mysql">mysql</td>
-                    <td><input type="radio" name="b" value="mongodb">mongodb</td>
+                    <td><input type="radio" name="db" value="mysql">mysql</td>
+                    <td><input type="radio" name="db" value="mongodb">mongodb</td>
                     <td></td>
                 </tr>
                 <tr>
                     <td>编辑器：</td>
-                    <td><input type="radio" name="c" value="ueditor">ueditor</td>
-                    <td><input type="radio" name="c" value="marked">marked</td>
-                    <td><input type="radio" name="c" value="md">md文件</td>
+                    <td><input type="radio" name="edit" value="ueditor">ueditor</td>
+                    <td><input type="radio" name="edit" value="marked">marked</td>
+                    <td><input type="radio" name="edit" value="md">md文件</td>
+                </tr>
+                <tr>
+                    <td>背景色:</td>
+                    <td><input type="radio" name="bg" value="d0d0d0"><span style="color:#d0d0d0">red</span></td>
+                    <td><input type="radio" name="bg" value="FC9D99"><span style="color:#FC9D99">red</span></td>
+                    <td><input type="radio" name="bg" value="AEDD81"><span style="color:#AEDD81">red</span></td>
+                    <td><input type="radio" name="bg" value="c39b6a"><span style="color:#c39b6a">red</span></td>
                 </tr>
             </table>
         </div>
@@ -61,7 +68,7 @@
     </div>
     <div id='right-box'>
         <ul>
-            <li onclick="createNewArticle()">
+            <li class="createArticle">
                 新建文章
             </li>
             <li onclick="postData()">

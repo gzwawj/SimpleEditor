@@ -1,50 +1,46 @@
 define(function (require, exports, module) {
+
     let $ = require('jquery')
-    let cookie=require('./cookie')
-    
+    let article = require('./article')
+    let style = require('./style')
+
     let article_data = [];
-    
-    function getContent() {
-        var arr = [];
-        arr.push("使用editor.getContent()方法可以获得编辑器的内容");
-        arr.push("内容为：");
-        arr.push(UE.getEditor('editor').getContent());
-        alert(arr.join("\n"));
-    }
-    
 
-    
-    /**
-     * 创建文章列表
-     * @param {array} data 
-     */
-    let createLiData = function (data) {
-        
 
-        //保存最大id到cookie
-        createMaxArticleIdToCookie(arr)
-        //文章数据赋值全局变量
-        article_data = data
-        //创建li数据列表
-        document.getElementById('article_lst').innerHTML = str;
-    }
+
     /**
-     * 保存最大id到cookie
-     * @param {array} arr 
+     * 页面初始化
+     * 1.获取文章数据->创建文章列表
+     * 2.设置默认参数参数
      */
-    let createMaxArticleIdToCookie = function (arr) {
-        if (arr.length > 0) {
-            //找出最大的id
-            let max_id = Math.max.apply(Math, arr)
-            let article_id = getCookie('article_id')
-            //保存最大id时进行判断，在分页的时候最大的id不一定是文章的最大id
-            if (max_id > article_id) {
-                setCookie('article_id', max_id)
-            }
-        } else {
-            setCookie('article_id', 0)
+    let init = function () {
+        style.init()
+        let object = {
+            data: {}
         }
+        article.lst()
+    }
 
+    /**
+     * 查看文章
+     */
+    $('#article_lst li').click(function(e){
+        let id=e.target.value
+        article.query(id)
+    })
+    /**
+     * 创建文章
+     */
+    $('.createArticle').click(function(){
+        console.log(123)
+        let article_form = document.getElementById('article_form');
+        article_form.reset()
+        UE.getEditor('editor').setContent('');
+    })
+    
+
+    module.exports = {
+        init: init
     }
     /**
      * 获取点击的文章具体内容
@@ -66,22 +62,9 @@ define(function (require, exports, module) {
      * @param {object} object 
      */
     let showArticleContent = function (object) {
-       
-    }
-    /**
-     * 获取数据列表
-     */
-    let getData = function () {
 
-        cookie.setCookie('aaaaaa','bbbbbbbbbb')
-        let obj = {
-            url: 'http://localhost:8899/lst',
-            data: {},
-            method: 'GET'
-        }
-        //异步t提交函数
-        requestUtil(obj, lstData)
     }
+
     /**
      * 提交表单函数
      */
@@ -128,7 +111,8 @@ define(function (require, exports, module) {
     let addOrUpdate = function (e) {
         if (e.code == 200) {
             alert(e.massage)
-            let i = 0, is_add = true
+            let i = 0,
+                is_add = true
             while (article_data[i]) {
                 if (article_data[i].id == e.data[0].id) {
                     //更新文章内容
@@ -148,19 +132,10 @@ define(function (require, exports, module) {
             createLiData(article_data)
         }
     }
-    /**
-     * 
-     * @param {object} obj 
-     * @param {function} fun 
-     */
-    let requestUtil = function (obj, fun) {
-        
-    }
-    
+
+
     //页面初始化调用函数
     // getData()
 
-    module.exports={
-        getData:getData
-    }
+
 });

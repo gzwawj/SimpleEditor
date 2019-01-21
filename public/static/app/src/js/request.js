@@ -1,9 +1,9 @@
 define(function (require, exports, module) {
     let $ = require('jquery')
     let host = 'http://localhost:8899'
-    let lst = function (object, func) {
+    let getData = function (object, func) {
         $.ajax({
-            url: host + '/lst',
+            url: host + '/' + object.fun,
             data: object.data,
             method: 'GET',
             type: 'JSON',
@@ -16,9 +16,9 @@ define(function (require, exports, module) {
             }
         })
     }
-    let add = function (object, func) {
+    let postData = function (object, func) {
         $.ajax({
-            url: host + '/add',
+            url: host + '/' + object.fun,
             data: object.data,
             method: 'POST',
             type: 'JSON',
@@ -33,8 +33,8 @@ define(function (require, exports, module) {
     }
 
     module.exports = {
-        lst: lst,
-        add: add
+        getData: getData,
+        postData: postData
     }
 
 });
