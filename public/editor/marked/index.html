@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/editormd.min.css">
+</head>
+<style>
+#editormd{
+    min-height: 300px;
+    max-width: 1200px;
+}
+</style>
+<body>
+    <div id="editormd">
+        
+    </div>
+<script src="../../modules/jquery/jquery.js"></script>
+<script src="editormd.js"></script>
+<script type="text/javascript">
+    $(function() {
+        var editor = editormd("editormd", {
+            path : "./lib/", // Autoload modules mode, codemirror, marked... dependents libs path
+            toolbarIcons:'simple'
+        });
+        // editor.toolbarModes=mini;
+
+        /*
+        // or
+        var editor = editormd({
+            id   : "editormd",
+            path : "../lib/"
+        });
+        */
+    });
+</script>
+</body>
+</html>
