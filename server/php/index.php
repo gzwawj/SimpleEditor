@@ -19,4 +19,15 @@ if($_FILES){
 
 
 $model=mysql::init();
-$model->getAllData();
+$data=array(
+'title'=>'aaa',
+'categories'=>'aaaabbbbcccc',
+'keywords'=>'a,b,c,d,e',
+'content'=>'asdfhaksjdfhalskdjfhlaskdjfhlsakdjfhsakldjf'
+);
+// $model->add('article',$data);
+// $res=$model->getOneData('article','title="aaa"');
+
+$res = $model->getAllData('article');
+
+var_dump($res);

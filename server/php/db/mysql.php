@@ -58,11 +58,11 @@ class mysql
     {
         $sql = "select id," . $this->field . " from " . $table . " where " . $where;
         $data = array();
+        $result = $this->mysqli->query($sql);
         while ($ros = $result->fetch_assoc()) {
             $data[] = $ros;
         }
         return $data;
-
     }
     /**
      * 数据添加
@@ -74,8 +74,8 @@ class mysql
         $keywords = $data['keywords'];
         $content = $data['content'];
 
-        $sql = "instart into " . $table . " (" . $this->field . ") values('{$title}','{$categories}','{$keywords}','{$content}')";
-
+        $sql = "insert into " . $table . " (" . $this->field . ") values('{$title}','{$categories}','{$keywords}','{$content}')";
+        var_dump($this->mysqli->query($sql));
         if ($this->mysqli->query($sql) === true) {
             return 1;
         } else {
@@ -88,12 +88,12 @@ class mysql
      */
     public function del($table, $where)
     {
-        $sql = "delect from " . $table . " where " . $where;
+        $sql = "delete from " . $table . " where " . $where;
         if ($where) {
             if ($this->mysqli->query($sql) === true) {
                 return 1;
             } else {
-                echo "Error: " . $sql . "<br>" . $conn->error;
+                echo "Error: " . $sql . "<br>" . $this->mysqli->error;
             }
         }
     }
@@ -102,7 +102,16 @@ class mysql
      */
     public function edit($table, $where, $data)
     {
-        $sql = "update " . $table . "set name=a where " . $where;
+        $str = '';
+        foreach ($data as $k => $v) {
+            if ($v == "") {
+                continue;
+            }
+            $str .= $k . "='{$v}',";
+        }
+        //去除多余的，号
+        $str = substr($str, 0, -1);
+        $sql = "update " . $table . " set " . $str . " where " . $where;
 
         if ($this->mysqli->query($sql) === true) {
             return 1;
