@@ -1,6 +1,6 @@
 <?php
 
-class mysql
+class MysqlModel
 {
     private $host = "127.0.0.1";
     private $name = "root";

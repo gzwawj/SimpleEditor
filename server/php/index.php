@@ -16,18 +16,3 @@ if($_FILES){
     $data= file_get_contents($_FILES['md']['tmp_name']);
     echo htmlspecialchars($data);
 }
-
-
-$model=mysql::init();
-$data=array(
-'title'=>'aaa',
-'categories'=>'aaaabbbbcccc',
-'keywords'=>'a,b,c,d,e',
-'content'=>'asdfhaksjdfhalskdjfhlaskdjfhlsakdjfhsakldjf'
-);
-// $model->add('article',$data);
-// $res=$model->getOneData('article','title="aaa"');
-
-$res = $model->getAllData('article');
-
-var_dump($res);
