@@ -6,7 +6,6 @@ class MysqlModel
     private $name = "root";
     private $pwd = "root";
     private $port = "3306";
-    private $dbname = "test";
 
     static private $conn = null;
     private $mysqli = null;
@@ -15,9 +14,9 @@ class MysqlModel
     /**
      * 防止直接创建对象
      */
-    private function __construct()
+    private function __construct($dbname)
     {
-        $conn = new mysqli($this->host, $this->name, $this->pwd, $this->dbname);
+        $conn = new mysqli($this->host, $this->name, $this->pwd, $dbname);
          // 检测连接
         if ($conn->connect_error) {
             die("连接失败: " . $conn->connect_error);
@@ -29,10 +28,10 @@ class MysqlModel
     /**
      * 初始化类
      */
-    static public function init()
+    static public function init($dbname)
     {
         if (!isset(self::$conn)) {
-            self::$conn = new self();
+            self::$conn = new self($dbname);
         }
         return self::$conn;
     }

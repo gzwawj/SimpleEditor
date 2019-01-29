@@ -1,5 +1,6 @@
 define(function (require, exports, module) {
     let cookie = require('./cookie')
+    let request=require('./request')
     let config = {
         pro: "php",
         db: "mysql",
@@ -58,28 +59,24 @@ define(function (require, exports, module) {
             let data = new FormData()
             let md = document.getElementById('mdfile').files
             data.append('md', md[0], md[0].name)
-
-            $.ajax({
-                url: "/server/php/index.php",
-                data: data,
-                type: "POST",
-                processData: false,
-                contentType: false,
-                success: function (e) {
-                    $('#codebox').empty()
-                    $('#codebox').append('<pre id="marked-content">' + e + '</pre>')
-                    let marked_id = 'marked-content'
-                    //获取文本
-                    let content = document.getElementById(marked_id).innerHTML;
-                    //正则替换标签
-                    content = content.replace(/(<div>|<br>|<\/div>|\s)*(<div>|<br>|<\/div>)/g, "\n");
-                    //marked转换
-                    document.getElementById(marked_id).innerHTML = marked(content);
-                    //代码高亮
-                    $('pre code').each(function (i, block) {
-                        hljs.highlightBlock(block);
-                    });
-                }
+            let object={
+                fun:'mdfile',
+                data:data
+            }
+            request.postData(object,function(e){
+                $('#codebox').empty()
+                $('#codebox').append('<pre id="marked-content">' + e + '</pre>')
+                let marked_id = 'marked-content'
+                //获取文本
+                let content = document.getElementById(marked_id).innerText;
+                //正则替换标签
+                content = content.replace(/(<div>|<br>|<\/div>|\s)*(<div>|<br>|<\/div>)/g, "\n");
+                //marked转换
+                document.getElementById(marked_id).innerHTML = marked(content);
+                //代码高亮
+                $('pre code').each(function (i, block) {
+                    hljs.highlightBlock(block);
+                });
             })
         })
     }
