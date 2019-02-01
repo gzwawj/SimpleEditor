@@ -17,6 +17,7 @@ class MysqlModel
     private function __construct($dbname)
     {
         $conn = new mysqli($this->host, $this->name, $this->pwd, $dbname);
+        $conn->query("SET NAMES utf8");//设置编码
          // 检测连接
         if ($conn->connect_error) {
             die("连接失败: " . $conn->connect_error);
@@ -53,9 +54,14 @@ class MysqlModel
     /**
      * 获取一条数据
      */
-    public function getOneData($table, $where)
+    public function getOneData($table, $where=array())
     {
-        $sql = "select id," . $this->field . " from " . $table . " where " . $where;
+        if($where){
+           $where_str="id='{$where['id']}'";
+        }else{
+            $where_str='id=0';
+        }
+        $sql = "select id," . $this->field . " from " . $table . " where " . $where_str;
         $data = array();
         $result = $this->mysqli->query($sql);
         while ($ros = $result->fetch_assoc()) {
@@ -74,7 +80,6 @@ class MysqlModel
         $content = $data['content'];
 
         $sql = "insert into " . $table . " (" . $this->field . ") values('{$title}','{$categories}','{$keywords}','{$content}')";
-        var_dump($this->mysqli->query($sql));
         if ($this->mysqli->query($sql) === true) {
             return 1;
         } else {
@@ -99,7 +104,7 @@ class MysqlModel
     /**
      * 修改数据
      */
-    public function edit($table, $where, $data)
+    public function edit($table, $where=array(), $data=array())
     {
         $str = '';
         foreach ($data as $k => $v) {
@@ -110,7 +115,12 @@ class MysqlModel
         }
         //去除多余的，号
         $str = substr($str, 0, -1);
-        $sql = "update " . $table . " set " . $str . " where " . $where;
+        if($where){
+            $where_str="id='{$where['id']}'";
+         }else{
+             $where_str='id=0';
+         }
+        $sql = "update " . $table . " set " . $str . " where " . $where_str;
 
         if ($this->mysqli->query($sql) === true) {
             return 1;

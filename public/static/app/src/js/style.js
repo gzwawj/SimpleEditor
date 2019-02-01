@@ -1,6 +1,6 @@
 define(function (require, exports, module) {
     let cookie = require('./cookie')
-    let request=require('./request')
+    let request = require('./request')
     let config = {
         pro: "php",
         db: "mysql",
@@ -59,11 +59,11 @@ define(function (require, exports, module) {
             let data = new FormData()
             let md = document.getElementById('mdfile').files
             data.append('md', md[0], md[0].name)
-            let object={
-                fun:'mdfile',
-                data:data
+            let object = {
+                fun: 'mdfile',
+                data: data
             }
-            request.postData(object,function(e){
+            request.postData(object, function (e) {
                 $('#codebox').empty()
                 $('#codebox').append('<pre id="marked-content">' + e + '</pre>')
                 let marked_id = 'marked-content'
@@ -88,7 +88,7 @@ define(function (require, exports, module) {
             UE.getEditor('editor');
         }
         if (value == 'marked') {
-            $('.editbox').append('<div id="editor"><textarea style="display:none;"></textarea></div>')
+            $('.editbox').append('<div id="editor"><textarea name="editor" style="display:none;"></textarea></div>')
             $('.editbox').append('<link href="/public/editor/marked/css/editormd.min.css" rel="stylesheet">')
             let editormd = require('../../../../editor/marked/src/editormd')
             editormd("editor", {
@@ -108,13 +108,10 @@ define(function (require, exports, module) {
      */
     let datalist = function (data) {
         let i = 0,
-            str = '',
-            arr = []
+            str = '';
         if (data.length > 0) {
             while (data[i]) {
-                arr.push(Number(data[i].id))
-
-                str += '<li onClick="articleLiOnClick(' + data[i].id + ')" title="' + data[i].title + " | " + data[i].createtime + '">'
+                str += '<li value=' + data[i].id + ' title="' + data[i].title + " | " + data[i].createtime + '">'
                 str += data[i].title
                 str += '</li>'
                 i++

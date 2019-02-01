@@ -22,8 +22,8 @@ define(function (require, exports, module) {
             method: 'GET',
             type: 'JSON',
             success: function (res) {
-                //对字符串进行转换
-                func(JSON.parse(res))
+                //返回data数据
+                func(dataAction(res))
             },
             error: function () {
                 console.log('error')
@@ -40,8 +40,8 @@ define(function (require, exports, module) {
                 processData: false,
                 contentType: false,
                 success: function (res) {
-                    //对字符串进行转换
-                    func(JSON.parse(res))
+                    //返回data数据
+                    func(dataAction(res))
                 },
                 error: function () {
                     console.log('error')
@@ -54,13 +54,21 @@ define(function (require, exports, module) {
                 method: 'POST',
                 type: 'JSON',
                 success: function (res) {
-                    //对字符串进行转换
-                    func(JSON.parse(res))
+                    //返回data数据
+                    func(dataAction(res))
                 },
                 error: function () {
                     console.log('error')
                 }
             })
+        }
+    }
+    let dataAction = function (data) {
+        let res = JSON.parse(data)
+        if (res.code == 2001) {
+            return res.data
+        } else {
+            alert(res.msg)
         }
     }
 

@@ -22,6 +22,7 @@ function articleLst($model)
         $data = array();
         foreach ($res as $k => $v) {
             $data[] = array(
+                "id" => $v['id'],
                 "title" => scapehtml($v['title']),
                 "categories" => scapehtml($v['categories']),
                 "keywords" => scapehtml($v['keywords']),
@@ -46,7 +47,7 @@ function articleAdd($model, $data)
     );
     $res = $model->add('article', $ins_data);
     if ($res) {
-        echo returnData(2001, '添加成功');
+        echo returnData(2001, '添加成功', $res);
     } else {
         echo returnData(2002, '添加失败');
     }
@@ -57,8 +58,8 @@ function articleAdd($model, $data)
  */
 function articleDel($model, $data)
 {
-    $where=array(
-        'id'=>$data['id']
+    $where = array(
+        'id' => $data['id']
     );
     $res = $model->del('article', $where);
     if ($res) {
@@ -70,11 +71,20 @@ function articleDel($model, $data)
 /**
  * 修改文章
  */
-function articleEdit($model,  $data)
+function articleEdit($model, $data)
 {
-    $res = $model->edit('article', $where, $data);
+    $where = array(
+        'id' => $data['id']
+    );
+    $edit_data = array(
+        "title" => htmlscape($data['title']),
+        "categories" => htmlscape($data['categories']),
+        "keywords" => htmlscape($data['keywords']),
+        "content" => htmlscape($data['content'])
+    );
+    $res = $model->edit('article', $where, $edit_data);
     if ($res) {
-        echo returnData(2001, '更新成功');
+        echo returnData(2001, '更新成功', $res);
     } else {
         echo returnData(2002, '更新失败');
     }
@@ -82,11 +92,24 @@ function articleEdit($model,  $data)
 /**
  * 查询指定文章
  */
-function articleQuery($model, $where)
+function articleQuery($model, $data)
 {
+    $where = array(
+        'id' => $data['id']
+    );
     $res = $model->getOneData('article', $where);
     if ($res) {
-        echo returnData(2001, '查询成功');
+        $data = array();
+        foreach ($res as $k => $v) {
+            $data[] = array(
+                "id" => $v['id'],
+                "title" => scapehtml($v['title']),
+                "categories" => scapehtml($v['categories']),
+                "keywords" => scapehtml($v['keywords']),
+                "content" => scapehtml($v['content'])
+            );
+        }
+        echo returnData(2001, '查询成功', $data);
     } else {
         echo returnData(2002, '查询失败');
     }
@@ -135,18 +158,18 @@ try {
             articleAdd($model, $req);
         } elseif ($req['fun'] == 'del') {
             //删除
-            articleDel($model,$req);
+            articleDel($model, $req);
         } elseif ($req['fun'] == 'edit') {
             //修改
-            articleEdit($model,$req);
+            articleEdit($model, $req);
         } elseif ($req['fun'] == 'query') {
             //查询
-            articleQuery($model,$req);
+            articleQuery($model, $req);
         }
         //markdown文件内容
         if ($req['fun'] == 'mdfile') {
             $data = file_get_contents($_FILES['md']['tmp_name']);
-            echo json_encode($data);
+            echo returnData(2001,'文件获取成功',$data);
         }
     } else {
         echo '请求错误！';

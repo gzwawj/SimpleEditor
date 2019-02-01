@@ -20,28 +20,30 @@ define(function (require, exports, module) {
     /**
      * 查看文章
      */
-    $('#article_lst li').click(function(e){
-        let id=e.target.value
+    $('#article_lst').on('click', 'li', function (e) {
+        let id = e.target.value
         article.query(id)
     })
     /**
      * 创建文章
      */
-    $('.createArticle').click(function(){
+    $('.createArticle').click(function () {
         console.log(123)
         let article_form = document.getElementById('article_form');
         article_form.reset()
-        UE.getEditor('editor').setContent('');
+        article.removeContent()
     })
     /**
      * 保存文章
      */
-    $('.saveArticle').on('click',function(){
+    $('.saveArticle').on('click', function () {
         let article_form = document.getElementById('article_form');
-        if(article_form.id.value){
+        console.log(article_form);
+
+        if (article_form.id.value) {
             //修改文章
-            article.edit()
-        }else{
+            article.edit(article_form.id.value)
+        } else {
             //创建文章
             article.create()
         }
