@@ -111,7 +111,7 @@ define(function (require, exports, module) {
             str = '';
         if (data.length > 0) {
             while (data[i]) {
-                str += '<li value=' + data[i].id + ' title="' + data[i].title + " | " + data[i].createtime + '">'
+                str += '<li data-articleid=' + data[i].id + ' title="' + data[i].title + " | " + data[i].createtime + '">'
                 str += data[i].title
                 str += '</li>'
                 i++

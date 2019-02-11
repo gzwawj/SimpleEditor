@@ -29,7 +29,8 @@ class MongodbModel
         $res = $this->mongodb->$table->find();
         $data = array();
         foreach ($res as $k => $v) {
-            $data[] = $v;
+            $data[$k] = $v;
+            $data[$k]['id']=(string) $v['_id'];//类型强制转换
         }
         return $data;
     }
@@ -38,10 +39,14 @@ class MongodbModel
      */
     public function getOneData($table, $where = array())
     {
-        $res = $this->mongodb->$table->find($where);
+        $where_q=array(
+            '_id'=>new MongoId($where['id'])
+        );
+        $res = $this->mongodb->$table->find($where_q);
         $data = array();
         foreach ($res as $k => $v) {
-            $data[] = $v;
+            $data[$k] = $v;
+            $data[$k]['id']=(string) $v['_id'];//类型强制转换
         }
         return $data;
     }
@@ -70,7 +75,10 @@ class MongodbModel
      */
     public function del($table, $where = array())
     {
-        $res = $this->mongodb->$table->remove($where, array('justOne' => true));
+        $where_d=array(
+            '_id'=>new MongoId($where['id'])
+        );
+        $res = $this->mongodb->$table->remove($where_d, array('justOne' => true));
 
         //返回执行结果
         if ($res) {
@@ -84,7 +92,10 @@ class MongodbModel
      */
     public function edit($table, $where = array(), $data = array())
     {
-        $res = $this->mongodb->$table->update($where, array('$set' => $data));
+        $where_e=array(
+            '_id'=>new MongoId($where['id'])
+        );
+        $res = $this->mongodb->$table->update($where_e, array('$set' => $data));
         
         //返回执行结果
         if ($res) {

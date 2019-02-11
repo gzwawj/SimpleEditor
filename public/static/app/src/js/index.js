@@ -21,7 +21,8 @@ define(function (require, exports, module) {
      * 查看文章
      */
     $('#article_lst').on('click', 'li', function (e) {
-        let id = e.target.value
+        //获取data-articleid属性的值
+        let id = e.target.dataset.articleid
         article.query(id)
     })
     /**
