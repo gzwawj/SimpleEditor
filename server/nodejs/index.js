@@ -2,83 +2,135 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const moment = require('moment')
-const mongodb = require('mongodb').MongoClient
-const ObjectId = require('mongodb').ObjectID
 
-let url = 'mongodb://localhost:27017/'
-//创建application/x-www-form-urlencoded 编码解析
-let urlencodedParser = bodyParser.urlencoded({ extended: false })
-//文章列表
-app.get('/lst', function (req, res) {
-  res.header("Access-Control-Allow-Origin", "*");//设置跨域
-  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-  //数据库操作
-  mongodb.connect(url, { useNewUrlParser: true }, (err, db) => {
-    if (err) {
-      throw err;
-    }
-    let dbo = db.db('test');
-    dbo.collection('article').find({}).toArray((err, result) => {
-      if (err) {
-        throw err;
-      }
-      db.close();//关闭数据库
-      res.end(JSON.stringify({ code: 200, massage: 'ok', data: result }))
-    })
+const mongodbModel = require('./db/mongodb')
+const mysqlModel = require('./db/mysql')
+/**
+ * 返回数据格式
+ * @param {int} code 2001成功，2002错误
+ * @param {string} msg 
+ * @param {array} data 
+ */
+let returnData = function (code, msg, data) {
+  return JSON.stringify({
+    code: code,
+    msg: msg,
+    data: data
   })
+}
+/**
+ * 获取所有数据
+ * @param {object} model 
+ * @param {function} func 
+ */
+let articleLst = function (model, func) {
+  model.getAllData('article', e => {
+    func(returnData(2001, '查询成功', e))
+  })
+}
+/**
+ * 添加数据
+ * @param {object} model 
+ * @param {object} data 
+ * @param {function} func 
+ */
+let articleAdd = function (model, data, func) {
+  model.add('article', data, e => {
+    func(returnData(2001, '添加成功', e))
+  })
+}
+/**
+ * 删除数据
+ * @param {object} model 
+ * @param {array} where 删除条件
+ * @param {function} func 
+ */
+let articleDel = function (model, where, func) {
+  model.del('article', where, e => {
+    func(returnData(2001, '删除成功', ''))
+  })
+}
+/**
+ * 修改数据
+ */
+let articleEdit = function (model, where, data, func) {
+  model.edit('article', where, data, e => {
+    func(returnData(2001, '修改成功', ''))
+  })
+}
+/**
+ * 查询某数据
+ */
+let articleQuery = function (model, where, func) {
+  model.getOneData('article', where, e => {
+    func(returnData(2001, '查询成功', e))
+  })
+}
+//创建application/x-www-form-urlencoded 编码解析
+let urlencodedParser = bodyParser.urlencoded({
+  extended: false
 })
-
-//添加文章
-app.post('/add', urlencodedParser, (req, res) => {
-  res.header("Access-Control-Allow-Origin", "*");//设置跨域
+//文章列表
+app.all('/', urlencodedParser, (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*"); //设置跨域
+  res.writeHead(200, {
+    'Content-Type': 'text/html; charset=utf-8'
+  });
+  //设置时间
   moment.locale('zh-cn')
   //获取当前时间
   let detetime = moment().format('YYYY-MM-DD HH:mm')
-  //数据库操作
-  mongodb.connect(url, { useNewUrlParser: true }, (err, db) => {
-    if (err) {
-      throw err;
-    }
-    let dbo = db.db('test');
-    let data = {
-      id: req.body.id,
-      title: req.body.title,
-      article: req.body.article,
-      createtime: detetime
-    }
-    dbo.collection('article').find({ title: req.body.title }).toArray((err, findRes) => {
-      if (err) {
-        throw err;
-      }
-      if (findRes.length > 0) {
-        //有数据就返回数据显示，更新操作
-        let where = { 'id': req.body.id }
-        let updateData = { $set: { 'title': req.body.title, 'article': req.body.article } }
-        dbo.collection('article').updateOne(where, updateData, (err, upRes) => {
-          if (err) {
-            throw err;
-          }
-          db.close();//关闭数据库
-          findRes[0] = data
-          res.end(JSON.stringify({ code: 200, massage: '更新成功', data: findRes }))
-        })
-      } else {
-        //没有数据执行添加数据操作
-        dbo.collection('article').insertOne(data, (err, result) => {
-          if (err) {
-            throw err;
-          }
-          db.close();//关闭数据库
-          res.end(JSON.stringify({ "code": 200, "massage": '添加成功', "data": result.ops }));//result.ops是添加后的数据
-        })
-
-      }
+  //请求数据
+  let requestData = req.query
+  let model = {};
+  let data = {
+    "title": req.body.title,
+    "categories": req.body.categories,
+    "keywords": req.body.keywords,
+    "content": req.body.content,
+  }
+  let where = []
+  where['id'] = req.query.id
+  // console.log(where)
+  //实例化数据库
+  if (requestData.db == 'mongodb') {
+    model = new mongodbModel()
+  }
+  if (requestData.db == 'mysql') {
+    model = new mysqlModel()
+  }
+  //操作方法
+  if (requestData.fun == 'lst') {
+    articleLst(model, e => {
+      res.end(e)
     })
-  })
+  }
+  if (requestData.fun == 'add') {
+    articleAdd(model, data, e => {
+      res.end(e)
+    })
+  }
+  if (requestData.fun == 'del') {
+    articleDel(model, where, e => {
+      res.end(e)
+    })
+  }
+  if (requestData.fun == 'edit') {
+    articleEdit(model, where, data, e => {
+      res.end(e)
+    })
+  }
+  if (requestData.fun == 'query') {
+    articleQuery(model, where, e => {
+      res.end(e)
+    })
+  }
 })
-
+//启动服务
 var server = app.listen(8899, function () {
-  var host = server.address().address
-  var port = server.address().port
-  console.log("应用实例，访问地址为 http://%s:%s", host, port)
+  console.log(
+    "应用实例，访问地址为 http://%s:%s",
+    server.address().address,
+    server.address().port
+  )
 })
