@@ -15,8 +15,35 @@ let returnData = function (code, msg, data) {
   return JSON.stringify({
     code: code,
     msg: msg,
-    data: data
+    data: dataAction(data)
   })
+}
+/**
+ * @function htmlscape 转义html脚本 < > & " '
+ */
+let htmlscape = function (html) {
+  html = "" + html;
+  return html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");;
+}
+/**
+ * @function scapehtml 还原html脚本 < > & " '
+ */
+let scapehtml = function (scape) {
+  scape = "" + scape;
+  return scape.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&apos;/g, "'");
+}
+let dataAction = function (data) {
+  let arr = []
+  data.forEach(e => {
+    arr.push({
+      "id": e.id,
+      "title": scapehtml(e.title),
+      "categories": scapehtml(e.categories),
+      "keywords": scapehtml(e.keywords),
+      "content": scapehtml(e.content),
+    })
+  });
+  return arr;
 }
 /**
  * 获取所有数据
@@ -84,10 +111,10 @@ app.all('/', urlencodedParser, (req, res) => {
   let requestData = req.query
   let model = {};
   let data = {
-    "title": req.body.title,
-    "categories": req.body.categories,
-    "keywords": req.body.keywords,
-    "content": req.body.content,
+    "title": htmlscape(req.body.title),
+    "categories": htmlscape(req.body.categories),
+    "keywords": htmlscape(req.body.keywords),
+    "content": htmlscape(req.body.content),
   }
   let where = []
   where['id'] = req.query.id
