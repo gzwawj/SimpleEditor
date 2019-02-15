@@ -1,36 +1,89 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask import request
 # import sys
 # sys.path.append('./db')
-from db.mysqlModel import *
+from db.MysqlModel import *
 from db.mongodbModel import *
+
+import html
 
 app = Flask(__name__)
 
 
+# 返回数据格式
+def returnData(code, msg, data=[]):
+    return jsonify({"code": code, "msg": msg, "data": dataAction(data)})
+
+
+# 转义html代码
+def htmlscape(htmlstr):
+    return html.escape(htmlstr)
+
+
+# 反转义html代码
+def scapehtml(scapestr):
+    return html.unescape(scapestr)
+
+
+def dataAction(data):
+    if (type(data) == int):
+        return data
+    else:
+        arr = []
+        for v in data:
+            arr.append({
+                "id": v['id'],
+                "title": scapehtml(v['title']),
+                "categories": scapehtml(v['categories']),
+                "keywords": scapehtml(v['keywords']),
+                "content": scapehtml(v['content'])
+            })
+        return arr
+
+
 # 获取列表
 def articleLst(model):
-    model.getAllData()
+    res = model.getAllData('article')
+    if res:
+        return returnData(2001, '查询成功', res)
+    else:
+        return returnData(2002, '无数据')
 
 
 # 添加数据
 def articleAdd(model, data):
-    return model.demo()
+    res = model.add('article', data)
+    if res:
+        return returnData(2001, '添加成功', res)
+    else:
+        return returnData(2002, '添加失败')
 
 
 # 删除
-def articleDel(model, data):
-    return model.demo()
+def articleDel(model, where):
+    res = model.delete('article', where)
+    if res:
+        return returnData(2001, '删除成功', res)
+    else:
+        return returnData(2002, '删除失败')
 
 
 # 修改
-def articleEdit(model, data):
-    return model.demo()
+def articleEdit(model, where, data):
+    res = model.edit('article', where, data)
+    if res:
+        return returnData(2001, '修改成功', res)
+    else:
+        return returnData(2002, '数据无变化')
 
 
 # 查询
-def articleQuery(model, data):
-    return model.demo()
+def articleQuery(model, where):
+    res = model.getOneData('article', where)
+    if res:
+        return returnData(2001, '查找成功', res)
+    else:
+        return returnData(2002, '无数据')
 
 
 # 程序入口
@@ -38,10 +91,16 @@ def articleQuery(model, data):
 def index():
     # 获取参数
     reqData = request.args
+    # 字段值处理
+    formData = {
+        "title": htmlscape(request.form['title']),
+        "categories": htmlscape(request.form['categories']),
+        "keywords": htmlscape(request.form['keywords']),
+        "content": htmlscape(request.form['content']),
+    }
     # 实例化数据库
     if (reqData['db'] == 'mysql'):
-        model = mysqlModel()
-        model.getAllData()
+        model = MysqlModel()
     elif (reqData['db'] == 'mongodb'):
         model = mongodbModel()
 
@@ -51,13 +110,13 @@ def index():
         return articleLst(model)
     elif (reqData['fun'] == 'add'):
         # 添加数据
-        return articleAdd(model, reqData)
+        return articleAdd(model, formData)
     elif (reqData['fun'] == 'del'):
         # 删除数据
         return articleDel(model, reqData)
     elif reqData['fun'] == 'edit':
         # 修改数据
-        return articleEdit(model, reqData)
+        return articleEdit(model, reqData, formData)
     elif reqData['fun'] == 'query':
         # 查询数据
         return articleQuery(model, reqData)
