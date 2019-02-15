@@ -89,37 +89,42 @@ def articleQuery(model, where):
 # 程序入口
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    # 获取参数
-    reqData = request.args
-    # 字段值处理
-    formData = {
-        "title": htmlscape(request.form['title']),
-        "categories": htmlscape(request.form['categories']),
-        "keywords": htmlscape(request.form['keywords']),
-        "content": htmlscape(request.form['content']),
-    }
-    # 实例化数据库
-    if (reqData['db'] == 'mysql'):
-        model = MysqlModel()
-    elif (reqData['db'] == 'mongodb'):
-        model = mongodbModel()
+    try:
+        # 获取参数
+        reqData = request.args
+        # 字段值处理
+        if request.method == "POST":
+            formData = {
+                "title": htmlscape(request.form['title']),
+                "categories": htmlscape(request.form['categories']),
+                "keywords": htmlscape(request.form['keywords']),
+                "content": htmlscape(request.form['content']),
+            }
 
-    # 执行方法
-    if (reqData['fun'] == 'lst'):
-        # 获取列表
-        return articleLst(model)
-    elif (reqData['fun'] == 'add'):
-        # 添加数据
-        return articleAdd(model, formData)
-    elif (reqData['fun'] == 'del'):
-        # 删除数据
-        return articleDel(model, reqData)
-    elif reqData['fun'] == 'edit':
-        # 修改数据
-        return articleEdit(model, reqData, formData)
-    elif reqData['fun'] == 'query':
-        # 查询数据
-        return articleQuery(model, reqData)
+        # 实例化数据库
+        if (reqData['db'] == 'mysql'):
+            model = MysqlModel()
+        elif (reqData['db'] == 'mongodb'):
+            model = mongodbModel()
+
+        # 执行方法
+        if (reqData['fun'] == 'lst'):
+            # 获取列表
+            return articleLst(model)
+        elif (reqData['fun'] == 'add'):
+            # 添加数据
+            return articleAdd(model, formData)
+        elif (reqData['fun'] == 'del'):
+            # 删除数据
+            return articleDel(model, reqData)
+        elif reqData['fun'] == 'edit':
+            # 修改数据
+            return articleEdit(model, reqData, formData)
+        elif reqData['fun'] == 'query':
+            # 查询数据
+            return articleQuery(model, reqData)
+    except ValueError:
+        print("err")
 
 
 # 启动服务
