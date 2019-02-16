@@ -3,7 +3,7 @@ from flask import request
 # import sys
 # sys.path.append('./db')
 from db.MysqlModel import *
-from db.mongodbModel import *
+from db.MongodbModel import *
 
 import html
 
@@ -105,7 +105,7 @@ def index():
         if (reqData['db'] == 'mysql'):
             model = MysqlModel()
         elif (reqData['db'] == 'mongodb'):
-            model = mongodbModel()
+            model = MongodbModel()
 
         # 执行方法
         if (reqData['fun'] == 'lst'):
