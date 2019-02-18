@@ -49,6 +49,19 @@ define(function (require, exports, module) {
             article.create()
         }
     })
+    /**
+     * 点击添加md文件
+     */
+    $('.file-add').on('click',function(){
+        $('input[type="file"]').trigger('click')
+        $('input[type="file"]').on('change',function(e){
+            //添加文件名
+            let url=e.target.value
+            let name=url.substring(url.lastIndexOf("\\")+1)
+            $('.file-add span').text(name)
+        })
+    })
+   
     module.exports = {
         init: init
     }

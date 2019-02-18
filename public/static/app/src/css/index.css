@@ -83,15 +83,41 @@ body {
       border-bottom: 1px solid #f0f0f0; }
       #centor-box #centor-bot input:nth-child(2n+1) {
         background: #999999; }
-    #centor-box #centor-bot .editbox {
-      height: 580px;
-      width: 100%;
-      background: #999999;
-      overflow: hidden; }
-      #centor-box #centor-bot .editbox #editor {
-        width: 100%; }
-      #centor-box #centor-bot .editbox #codebox {
-        padding: 5px; }
+    #centor-box #centor-bot .centor-view {
+      position: relative; }
+      #centor-box #centor-bot .centor-view .file-add {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        right: 0;
+        border: 3px dotted #999;
+        text-align: center;
+        opacity: 0.2; }
+        #centor-box #centor-bot .centor-view .file-add:hover {
+          border-color: #333;
+          opacity: 0.9; }
+        #centor-box #centor-bot .centor-view .file-add p {
+          font-size: 40px;
+          line-height: 100px; }
+        #centor-box #centor-bot .centor-view .file-add span {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0; }
+      #centor-box #centor-bot .centor-view .editbox {
+        height: 580px;
+        width: 100%;
+        background: #999999;
+        overflow: auto; }
+        #centor-box #centor-bot .centor-view .editbox input[type='file'] {
+          display: none; }
+        #centor-box #centor-bot .centor-view .editbox #editor {
+          width: 100%; }
+        #centor-box #centor-bot .centor-view .editbox #codebox {
+          padding: 5px; }
+          #centor-box #centor-bot .centor-view .editbox #codebox pre {
+            white-space: pre-wrap;
+            word-wrap: break-word; }
 
 /*右边功能区*/
 #right-box {

@@ -115,21 +115,60 @@ $boxColor:#999999;
             }
         }
 
-        .editbox {
-            height: 580px;
-            width: 100%;
-            background: $boxColor;
-            overflow: hidden;
+        .centor-view {
+            position: relative;
 
-            #editor {
-                width: 100%;
+            .file-add {
+                position: absolute;
+                width: 100px;
+                height: 100px;
+                right: 0;
+                border: 3px dotted #999;
+                text-align: center;
+                opacity: 0.2;
+
+                &:hover {
+                    border-color: #333;
+                    opacity: 0.9;
+                }
+
+                p {
+                    font-size: 40px;
+                    line-height: 100px;
+                }
+
+                span {
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                }
             }
 
-            #codebox {
-                padding: 5px;
+            .editbox {
+                height: 580px;
+                width: 100%;
+                background: $boxColor;
+                overflow: auto;
+
+                input[type='file'] {
+                    display: none;
+                }
+
+                #editor {
+                    width: 100%;
+                }
+
+                #codebox {
+                    padding: 5px;
+
+                    pre {
+                        white-space: pre-wrap;
+                        word-wrap: break-word;
+                    }
+                }
             }
         }
-
     }
 }
 
