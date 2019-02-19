@@ -56,28 +56,8 @@ define(function (require, exports, module) {
         })
 
         $('#mdfile').change(function () {
-            let data = new FormData()
             let md = document.getElementById('mdfile').files
-            data.append('md', md[0], md[0].name)
-            let object = {
-                fun: 'mdfile',
-                data: data
-            }
-            request.postData(object, function (e) {
-                $('#codebox').empty()
-                $('#codebox').append('<pre id="marked-content">' + e + '</pre>')
-                let marked_id = 'marked-content'
-                //获取文本
-                let content = document.getElementById(marked_id).innerText;
-                //正则替换标签
-                content = content.replace(/(<div>|<br>|<\/div>|\s)*(<div>|<br>|<\/div>)/g, "\n");
-                //marked转换
-                document.getElementById(marked_id).innerHTML = marked(content);
-                //代码高亮
-                $('pre code').each(function (i, block) {
-                    hljs.highlightBlock(block);
-                });
-            })
+            fileUpdata(md)
         })
     }
     let editor = function (value) {
@@ -102,6 +82,32 @@ define(function (require, exports, module) {
             $('.editbox').append('<script src="/public/editor/md/js/marked.min.js"></script>')
             $('.editbox').append('<script src="/public/editor/md/js/highlight.min.js"></script>')
         }
+    }
+    /**
+     * 文件上传函数
+     */
+    let fileUpdata = function (file) {
+        let data = new FormData()
+        data.append('md', file[0], file[0].name)
+        let object = {
+            fun: 'mdfile',
+            data: data
+        }
+        request.postData(object, function (e) {
+            $('#codebox').empty()
+            $('#codebox').append('<pre id="marked-content">' + e + '</pre>')
+            let marked_id = 'marked-content'
+            //获取文本
+            let content = document.getElementById(marked_id).innerText;
+            //正则替换标签
+            content = content.replace(/(<div>|<br>|<\/div>|\s)*(<div>|<br>|<\/div>)/g, "\n");
+            //marked转换
+            document.getElementById(marked_id).innerHTML = marked(content);
+            //代码高亮
+            $('pre code').each(function (i, block) {
+                hljs.highlightBlock(block);
+            });
+        })
     }
     /**
      * 创建文章列表
@@ -139,6 +145,7 @@ define(function (require, exports, module) {
     }
     module.exports = {
         init: init,
+        fileUpdata: fileUpdata,
         datalist: datalist
     }
 

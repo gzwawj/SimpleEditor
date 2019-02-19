@@ -52,16 +52,36 @@ define(function (require, exports, module) {
     /**
      * 点击添加md文件
      */
-    $('.file-add').on('click',function(){
+    $('.file-add').on('click', function () {
         $('input[type="file"]').trigger('click')
-        $('input[type="file"]').on('change',function(e){
+        $('input[type="file"]').on('change', function (e) {
             //添加文件名
-            let url=e.target.value
-            let name=url.substring(url.lastIndexOf("\\")+1)
+            let url = e.target.value
+            let name = url.substring(url.lastIndexOf("\\") + 1)
             $('.file-add span').text(name)
         })
     })
-   
+    /**
+     * 拖拽添加文件
+     * 允许文件放入事件
+     */
+    $('.file-add').on('dragover', function (e) {
+        // 取消默认浏览器拖拽效果
+        e.originalEvent.preventDefault();
+        e.originalEvent.stopPropagation();
+    })
+    /**
+     * 拖拽添加文件
+     * 文件放下事件
+     */
+    $('.file-add').on('drop', function (e) {
+        // 取消默认浏览器拖拽效果
+        e.originalEvent.preventDefault();
+        e.originalEvent.stopPropagation();
+        let files = e.originalEvent.dataTransfer.files;
+        $('.file-add span').text(files[0].name)
+        style.fileUpdata(files)
+    })
     module.exports = {
         init: init
     }
