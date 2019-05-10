@@ -1,0 +1,35 @@
+{
+  "name": "typescript-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "init": "npm install grunt typescript",
+    "inits": "npm install grunt-contrib-uglify grunt-contrib-sass grunt-contrib-cssmin grunt-contrib-watch --save-dev",
+    "webpack": "webpack --config webpack.config.js",
+    "ts": "tsc -w",
+    "grunt": "grunt watchit",
+    "tg": "tsc -b && grunt"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "grunt": "^1.0.3",
+    "grunt-cli": "^1.3.2",
+    "grunt-contrib-cssmin": "^3.0.0",
+    "grunt-contrib-sass": "^1.0.0",
+    "grunt-contrib-uglify": "^4.0.1",
+    "grunt-contrib-watch": "^1.1.0"
+  },
+  "dependencies": {
+    "@types/clipboard": "^2.0.1",
+    "@types/jquery": "^3.3.29",
+    "@types/marked": "^0.6.3",
+    "clipboard": "^2.0.4",
+    "jquery": "^3.3.1",
+    "marked": "^0.6.1",
+    "typescript": "^3.3.4000"
+  }
+}
