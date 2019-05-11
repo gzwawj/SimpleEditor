@@ -48,22 +48,8 @@
         box-shadow: 0 0 5px 1px $boxShadowColor;
         border-radius: 5px;
 
-        .article-item {
-            position: relative;
-            left: 0;
-            top: 0;
-            width: 500px;
-            margin: auto;
-            box-sizing: border-box;
-            transition: all .2s ease-out;
-
-            &:hover {
-                left: -250px;
-            }
-
-            .aitem {
-                display: table-cell;
-            }
+        &:hover{
+            box-shadow: 0 0 5px 5px $boxShadowColor;
         }
     }
 }

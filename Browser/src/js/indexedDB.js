@@ -86,7 +86,7 @@ define(["require", "exports"], function (require, exports) {
             res.onsuccess = function () {
                 func(_this.returnData(2001, res, '查询成功'));
             };
-            res.onsuccess = function () {
+            res.onerror = function () {
                 func(_this.returnData(2002, '', '查询失败'));
             };
         };

@@ -3,6 +3,7 @@ import {md} from "./md";
 import {article} from "./article";
 import {alerter} from "./style";
 import {req} from "./request";
+import $ from 'jquery'
 
 //获取文章内容
 let ftitle: any = document.querySelector('#form-title')
@@ -24,6 +25,15 @@ let articlenum: number = 1
 //预览
 let effectPreview: any = document.querySelector('.effect-preview')
 let codePreview: any = document.querySelector('.code-preview')
+
+let obj: any = {
+    id:articlenum,
+    title: '',
+    content: '',
+    category: '',
+    keywords: '',
+    is_save: false
+}
 /**
  * 文章书写初始化
  * 新增文章与添加文件调用
@@ -37,14 +47,17 @@ let article_init = function () {
     setTimeout(function () {
         idb.count((e: any) => {
             articlenum = e.data.result + 1
-            console.log(articlenum)
+            obj.id=articlenum
         })
         ftitle.removeAttribute('readonly')
         fcontent.removeAttribute('readonly')
         fcategory.removeAttribute('readonly')
         fkeywords.removeAttribute('readonly')
 
-        list_article()
+        list_article(function(e:string){
+            $("#c-left ul").empty()
+            $("#c-left ul").append(e)
+        })
     }, 1000)
 
     ftitle.value = ''
@@ -52,14 +65,7 @@ let article_init = function () {
     fcategory.value = ''
     fkeywords.value = ''
 }
-let obj: any = {
-    id:articlenum,
-    title: '',
-    content: '',
-    category: '',
-    keywords: '',
-    is_save: false
-}
+
 let time_id: any = null
 let delay_save = function (key: string, box: any) {
     if (time_id != null) {
@@ -73,7 +79,7 @@ let delay_save = function (key: string, box: any) {
         if (val !== '') {
             obj[key] = val
             idb.add(obj, articlenum, (e: any) => {
-                console.log(e.msg)
+                alerter(e.msg)
             })
         }
         if (key === 'content') {
@@ -108,6 +114,31 @@ let action = function () {
     })
     article_post.addEventListener("click",function(){
         post_article()
+    })
+
+    $('#c-left').on('click','a',function(e:any){
+        let article_id=e.target.dataset.articleId
+        idb.read(parseInt(article_id),function(res:any){
+            if(res.code==2001){
+                let article=res.data.result
+                ftitle.value=article.title
+                fcontent.value=article.content
+                fcategory.value=article.category
+                fkeywords.value=article.keywords
+
+                obj.id=article.id
+                obj.title=article.title
+                obj.content=article.content
+                obj.category=article.category
+                obj.keywords=article.keywords
+
+                articlenum=article.id
+                effectPreview.innerHTML = md(article.content)
+                codePreview.value = md(article.content)
+            }else{
+                alerter(res.msg)
+            }
+        })
     })
 }
 /**
@@ -156,10 +187,28 @@ let post_article=function(){
         })
     }
 }
-let list_article=function(){
+let list_article=function(func:any){
     idb.lst(1,(e:any)=>{
-        console.log(e)
+        if(e.code=2001){
+            let str:string=""
+            let data=e.data.result
+
+            for(let i in data){
+                str+=`
+                    <li>
+                        <div class="article-item">
+                            <div class="title"><a href="javascript:void(0)" data-article-id=${data[i].id}>${data[i].title}</a></div>
+                            <div>分类:${data[i].category}</div>
+                            <div>关键字:${data[i].keywords}</div>
+                            <div>时间:</div>
+                        </div>
+                    </li>`
+            }
+            func(str)
+        }else{
+            alerter(e.msg)
+        }
     })
 }
 
-export {action, delay_save}
+export {action, delay_save,list_article}

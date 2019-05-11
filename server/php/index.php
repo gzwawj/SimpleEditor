@@ -168,7 +168,7 @@ try {
         }
         //markdown文件内容
         if ($req['fun'] == 'mdfile') {
-            $data = file_get_contents($_FILES['md']['tmp_name']);
+            $data = file_get_contents($_FILES['files']['tmp_name']);
             echo returnData(2001,'文件获取成功',$data);
         }
     } else {

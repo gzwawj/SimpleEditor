@@ -1,6 +1,10 @@
-define(["require", "exports", "./indexedDB", "./md", "./article", "./style", "./request"], function (require, exports, indexedDB_1, md_1, article_1, style_1, request_1) {
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+define(["require", "exports", "./indexedDB", "./md", "./article", "./style", "./request", "jquery"], function (require, exports, indexedDB_1, md_1, article_1, style_1, request_1, jquery_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    jquery_1 = __importDefault(jquery_1);
     //获取文章内容
     var ftitle = document.querySelector('#form-title');
     var fcontent = document.querySelector('#form-content');
@@ -19,6 +23,14 @@ define(["require", "exports", "./indexedDB", "./md", "./article", "./style", "./
     //预览
     var effectPreview = document.querySelector('.effect-preview');
     var codePreview = document.querySelector('.code-preview');
+    var obj = {
+        id: articlenum,
+        title: '',
+        content: '',
+        category: '',
+        keywords: '',
+        is_save: false
+    };
     /**
      * 文章书写初始化
      * 新增文章与添加文件调用
@@ -31,26 +43,21 @@ define(["require", "exports", "./indexedDB", "./md", "./article", "./style", "./
         setTimeout(function () {
             indexedDB_1.idb.count(function (e) {
                 articlenum = e.data.result + 1;
-                console.log(articlenum);
+                obj.id = articlenum;
             });
             ftitle.removeAttribute('readonly');
             fcontent.removeAttribute('readonly');
             fcategory.removeAttribute('readonly');
             fkeywords.removeAttribute('readonly');
-            list_article();
+            list_article(function (e) {
+                jquery_1.default("#c-left ul").empty();
+                jquery_1.default("#c-left ul").append(e);
+            });
         }, 1000);
         ftitle.value = '';
         fcontent.value = '';
         fcategory.value = '';
         fkeywords.value = '';
-    };
-    var obj = {
-        id: articlenum,
-        title: '',
-        content: '',
-        category: '',
-        keywords: '',
-        is_save: false
     };
     var time_id = null;
     var delay_save = function (key, box) {
@@ -65,7 +72,7 @@ define(["require", "exports", "./indexedDB", "./md", "./article", "./style", "./
             if (val !== '') {
                 obj[key] = val;
                 indexedDB_1.idb.add(obj, articlenum, function (e) {
-                    console.log(e.msg);
+                    style_1.alerter(e.msg);
                 });
             }
             if (key === 'content') {
@@ -98,6 +105,29 @@ define(["require", "exports", "./indexedDB", "./md", "./article", "./style", "./
         });
         article_post.addEventListener("click", function () {
             post_article();
+        });
+        jquery_1.default('#c-left').on('click', 'a', function (e) {
+            var article_id = e.target.dataset.articleId;
+            indexedDB_1.idb.read(parseInt(article_id), function (res) {
+                if (res.code == 2001) {
+                    var article_2 = res.data.result;
+                    ftitle.value = article_2.title;
+                    fcontent.value = article_2.content;
+                    fcategory.value = article_2.category;
+                    fkeywords.value = article_2.keywords;
+                    obj.id = article_2.id;
+                    obj.title = article_2.title;
+                    obj.content = article_2.content;
+                    obj.category = article_2.category;
+                    obj.keywords = article_2.keywords;
+                    articlenum = article_2.id;
+                    effectPreview.innerHTML = md_1.md(article_2.content);
+                    codePreview.value = md_1.md(article_2.content);
+                }
+                else {
+                    style_1.alerter(res.msg);
+                }
+            });
         });
     };
     exports.action = action;
@@ -153,9 +183,20 @@ define(["require", "exports", "./indexedDB", "./md", "./article", "./style", "./
             });
         }
     };
-    var list_article = function () {
+    var list_article = function (func) {
         indexedDB_1.idb.lst(1, function (e) {
-            console.log(e);
+            if (e.code = 2001) {
+                var str = "";
+                var data = e.data.result;
+                for (var i in data) {
+                    str += "\n                    <li>\n                        <div class=\"article-item\">\n                            <div class=\"title\"><a href=\"javascript:void(0)\" data-article-id=" + data[i].id + ">" + data[i].title + "</a></div>\n                            <div>\u5206\u7C7B:" + data[i].category + "</div>\n                            <div>\u5173\u952E\u5B57:" + data[i].keywords + "</div>\n                            <div>\u65F6\u95F4:</div>\n                        </div>\n                    </li>";
+                }
+                func(str);
+            }
+            else {
+                style_1.alerter(e.msg);
+            }
         });
     };
+    exports.list_article = list_article;
 });

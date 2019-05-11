@@ -225,20 +225,8 @@ table {
   box-shadow: 0 0 5px 1px #f0bdbd;
   border-radius: 5px;
 }
-#c-left li .article-item {
-  position: relative;
-  left: 0;
-  top: 0;
-  width: 500px;
-  margin: auto;
-  box-sizing: border-box;
-  transition: all .2s ease-out;
-}
-#c-left li .article-item:hover {
-  left: -250px;
-}
-#c-left li .article-item .aitem {
-  display: table-cell;
+#c-left li:hover {
+  box-shadow: 0 0 5px 5px #f0bdbd;
 }
 
 #c-right {

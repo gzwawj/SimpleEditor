@@ -82,7 +82,7 @@ class indexedDBController {
         res.onsuccess = () => {
             func(_this.returnData(2001, res, '查询成功'))
         }
-        res.onsuccess = () => {
+        res.onerror = () => {
             func(_this.returnData(2002, '', '查询失败'))
         }
     }
