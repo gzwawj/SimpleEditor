@@ -1,0 +1,2 @@
+/*! This is uglify test - 2019-09-15 */
+var __importDefault=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};define(["require","exports","marked"],function(e,t,r){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),r=__importDefault(r);t.md=function(e){return r.default(e)}});

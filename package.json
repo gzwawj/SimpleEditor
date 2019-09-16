@@ -1,0 +1,28 @@
+{
+  "name": "editor",
+  "version": "1.0.0",
+  "description": "- [x] 全屏预览 \r - [x] 分屏预览 \r - [x] 代码预览 \r - [x] 添加文章\r - [x] md文件添加文章\r - [x] 文章保存\r - [x] 使用邮箱发布\r - [x] 获取图片（七牛。。。）\r - [ ] 文章列表\r - [ ] 显示指定文章\r - [ ] 添加数据库\r - [ ] 添加设置选项",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node src/main.ts"
+  },
+  "repository": "git+https://github.com/gzwawj/editor.git",
+  "keywords": [],
+  "author": "gzwawj <936588357@qq.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gzwawj/editor/issues"
+  },
+  "homepage": "https://github.com/gzwawj/editor#readme",
+  "dependencies": {
+    "@types/clipboard": "^2.0.1",
+    "@types/jquery": "^3.3.31",
+    "@types/js-yaml": "^3.12.1",
+    "@types/marked": "^0.6.5",
+    "@types/yaml": "^1.0.2",
+    "sqlite3": "^4.1.0",
+    "tsnode-express": "^0.1.2",
+    "yaml": "^1.6.0"
+  }
+}

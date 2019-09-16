@@ -1,0 +1,2 @@
+/*! This is uglify test - 2019-09-15 */
+define(["require","exports"],function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default={qiniu:{host:"po8j27fia.bkt.clouddn.com",bucket:"phpsdk",list:{type:"list",prefix:"",marker:"",limit:2},upload:{type:"upload"}}}});

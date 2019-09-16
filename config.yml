@@ -1,0 +1,3 @@
+database:
+  db: "article.db"
+  table: "article"
