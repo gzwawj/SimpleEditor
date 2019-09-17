@@ -1,214 +1,73 @@
-import {idb} from "./indexedDB";
-import {md} from "./md";
-import {article} from "./article";
-import {alerter} from "./style";
-import {req} from "./request";
-import $ from 'jquery'
+import marked from "marked";
+import clipboard from 'clipboard'
 
-//获取文章内容
-let ftitle: any = document.querySelector('#form-title')
-let fcontent: any = document.querySelector('#form-content')
-let fcategory: any = document.querySelector('#form-category')
-let fkeywords: any = document.querySelector('#form-keywords')
-
-//保存文章
-let article_save: any = document.querySelector('.artic-save')
-let article_down: any = document.querySelector('.artic-down')
-//保存状态
-let sub:any=document.querySelector('.sub')
-//发布文章
-let article_post:any=document.querySelector('.artic-post')
-let mail:any=document.querySelector('#email')
-//新增文章id
-let articlenum: number = 1
-
-//预览
-let effectPreview: any = document.querySelector('.effect-preview')
-let codePreview: any = document.querySelector('.code-preview')
-
-let obj: any = {
-    id:articlenum,
-    title: '',
-    content: '',
-    category: '',
-    keywords: '',
-    is_save: false
+if (clipboard.isSupported()) {
+    new clipboard('li')
 }
-/**
- * 文章书写初始化
- * 新增文章与添加文件调用
- */
-let article_init = function () {
-    ftitle.setAttribute('readonly', true)
-    fcontent.setAttribute('readonly', true)
-    fcategory.setAttribute('readonly', true)
-    fkeywords.setAttribute('readonly', true)
-
-    setTimeout(function () {
-        idb.count((e: any) => {
-            articlenum = e.data.result + 1
-            obj.id=articlenum
-        })
-        ftitle.removeAttribute('readonly')
-        fcontent.removeAttribute('readonly')
-        fcategory.removeAttribute('readonly')
-        fkeywords.removeAttribute('readonly')
-
-        list_article(function(e:string){
-            $("#c-left ul").empty()
-            $("#c-left ul").append(e)
-        })
-    }, 1000)
-
-    ftitle.value = ''
-    fcontent.value = ''
-    fcategory.value = ''
-    fkeywords.value = ''
+let ajax_text = function (dom: any, url: string, data: object, method: string = "POST") {
+    return dom.ajax({
+        url: url,
+        data: data,
+        method: method,
+        type: "JSON"
+    })
 }
-
-let time_id: any = null
-let delay_save = function (key: string, box: any) {
-    if (time_id != null) {
-        clearTimeout(time_id);
+let ajax_file = function (dom: any, url: string, data: object) {
+    return dom.ajax({
+        url: url,
+        data: data,
+        method: "POST",
+        type: "JSON",
+        processData: false,
+        contentType: false,
+    })
+}
+let article_list_html = function (data: any) {
+    let str: string = ""
+    for (let i in data) {
+        str += `
+        <li>
+            <div class="article-item">
+                <div class="title"><a href="javascript:void(0)" data-article-id=${data[i].id}>${data[i].title}</a></div>
+                <div>分类:${data[i].categories}</div>
+                <div>关键字:${data[i].keywords}</div>
+                <div>时间:</div>
+            </div>
+        </li>
+        `
     }
-    time_id = setTimeout(function () {
-        //保存状态
-        sub.style.display='block'
-        obj.is_save = false
-        let val = box.value
-        if (val !== '') {
-            obj[key] = val
-            idb.add(obj, articlenum, (e: any) => {
-                alerter(e.msg)
-            })
-        }
-        if (key === 'content') {
-            effectPreview.innerHTML = md(val)
-            codePreview.value = md(val)
-        }
+    return str
+}
+let images_list_html = function (data: any, marker: string = "") {
+    let str: string = ""
+    for (let i in data) {
+        str += `<li title="点击复制" data-clipboard-text="//${data[i].key}"><img src="//${data[i].key}"></li>`
+    }
+    if (marker) {
+        str += `<b class="loading" data-qiniu-marker="${marker}">加载更多</b>`
+    }
+    return str
+}
+let _time: any = null
+let delay_save = function (dom: any, key: string) {
+    if (_time != null) {
+        clearTimeout(_time);
+    }
+    _time = setTimeout(function () {
+        dom(".sub").css({ "display": "block" })
+        let val = dom("#form-content").val()
+        dom(".code-preview").val(marked(val))
+        dom(".effect-preview").val(marked(val))
     }, 1000);
 }
-/**
- * 编辑文章
- */
-let action = function () {
-
-    idb.connect('article')
-    article_init()
-
-    ftitle.addEventListener("keydown", function (e: any) {
-        delay_save('title', ftitle)
-    })
-    fcontent.addEventListener("keydown", function (e: any) {
-        delay_save('content', fcontent)
-    })
-    fcategory.addEventListener("keydown", function (e: any) {
-        delay_save('category', fcategory)
-    })
-    fkeywords.addEventListener("keydown", function (e: any) {
-        delay_save('keywords', fkeywords)
-    })
-
-    article_save.addEventListener("click", function (e: any) {
-        save_article()
-    })
-    article_post.addEventListener("click",function(){
-        post_article()
-    })
-
-    $('#c-left').on('click','a',function(e:any){
-        let article_id=e.target.dataset.articleId
-        idb.read(parseInt(article_id),function(res:any){
-            if(res.code==2001){
-                let article=res.data.result
-                ftitle.value=article.title
-                fcontent.value=article.content
-                fcategory.value=article.category
-                fkeywords.value=article.keywords
-
-                obj.id=article.id
-                obj.title=article.title
-                obj.content=article.content
-                obj.category=article.category
-                obj.keywords=article.keywords
-
-                articlenum=article.id
-                effectPreview.innerHTML = md(article.content)
-                codePreview.value = md(article.content)
-            }else{
-                alerter(res.msg)
-            }
-        })
-    })
+let alerter = function (dom: any, msg: string) {
+    dom(".alerter-content").text(msg)
+    dom(".alerter").css({ "display": "block" })
+    dom(".alerter").fadeOut(3000)
+    dom(".add").hide()
+    dom(".save").hide()
+    dom(".post").hide()
+    dom(".images").hide()
+    dom(".shade").hide()
 }
-/**
- * 保存文章
- */
-let save_article = function () {
-    if (obj.title == '') {
-        alerter('标题不能为空！')
-    } else if (obj.content == '') {
-        alerter('内容不能为空！')
-    } else if (obj.category == '') {
-        alerter('分类不能为空！')
-    } else if (obj.keywords == '') {
-        alerter('关键字不能为空！')
-    } else {
-        //保存状态
-        sub.style.display='none'
-        obj.is_save = true
-        article.add(obj)
-        idb.add(obj, articlenum, (e: any) => {
-            alerter(e.msg)
-        })
-    }
-}
-/**
- * 发布文章
- */
-let post_article=function(){
-    if(!obj.is_save){
-        alerter('请先保存文章！')
-    }else if(mail.value==''){
-        alerter('邮箱不能为空！')
-    }else{
-        let data={
-            url:"http://static.codeinfo.top/mail/index/send",
-            data:{
-                author:'gzwawj.',
-                title:obj.title,
-                content:md(obj.content),
-                email:mail.value
-            },
-            method:'POST'
-        }
-        req.text(data,(e:any)=>{
-            alerter(e.msg)
-        })
-    }
-}
-let list_article=function(func:any){
-    idb.lst(1,(e:any)=>{
-        if(e.code=2001){
-            let str:string=""
-            let data=e.data.result
-
-            for(let i in data){
-                str+=`
-                    <li>
-                        <div class="article-item">
-                            <div class="title"><a href="javascript:void(0)" data-article-id=${data[i].id}>${data[i].title}</a></div>
-                            <div>分类:${data[i].category}</div>
-                            <div>关键字:${data[i].keywords}</div>
-                            <div>时间:</div>
-                        </div>
-                    </li>`
-            }
-            func(str)
-        }else{
-            alerter(e.msg)
-        }
-    })
-}
-
-export {action, delay_save,list_article}
+export { ajax_text, ajax_file, article_list_html, images_list_html, delay_save, alerter }

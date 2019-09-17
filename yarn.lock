@@ -78,6 +78,13 @@
   resolved "http://r.cnpmjs.org/@types/node/download/@types/node-9.6.52.tgz#ddba1f1fdaf1487a0a992ee238c43f5318ba5625"
   integrity sha1-3bofH9rxSHoKmS7iOMQ/Uxi6ViU=
 
+"@types/nodemailer@^6.2.1":
+  version "6.2.1"
+  resolved "http://r.cnpmjs.org/@types/nodemailer/download/@types/nodemailer-6.2.1.tgz#8f089bf0ef826f04b9d8dd8750233b04978cb675"
+  integrity sha1-jwib8O+CbwS52N2HUCM7BJeMtnU=
+  dependencies:
+    "@types/node" "*"
+
 "@types/range-parser@*":
   version "1.2.3"
   resolved "http://r.cnpmjs.org/@types/range-parser/download/@types/range-parser-1.2.3.tgz#7ee330ba7caafb98090bece86a5ee44115904c2c"
@@ -849,6 +856,11 @@ nodejs-lite-logger@0.0.13:
   version "0.0.13"
   resolved "http://r.cnpmjs.org/nodejs-lite-logger/download/nodejs-lite-logger-0.0.13.tgz#37a55603fb2b341c1211c1d05e13f64cb63bca9d"
   integrity sha1-N6VWA/srNBwSEcHQXhP2TLY7yp0=
+
+nodemailer@^6.3.0:
+  version "6.3.0"
+  resolved "http://r.cnpmjs.org/nodemailer/download/nodemailer-6.3.0.tgz#a89b0c62d3937bdcdeecbf55687bd7911b627e12"
+  integrity sha1-qJsMYtOTe9ze7L9VaHvXkRtifhI=
 
 nopt@^4.0.1:
   version "4.0.1"

@@ -1,202 +1,77 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-define(["require", "exports", "./indexedDB", "./md", "./article", "./style", "./request", "jquery"], function (require, exports, indexedDB_1, md_1, article_1, style_1, request_1, jquery_1) {
+define(["require", "exports", "marked", "clipboard"], function (require, exports, marked_1, clipboard_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    jquery_1 = __importDefault(jquery_1);
-    //获取文章内容
-    var ftitle = document.querySelector('#form-title');
-    var fcontent = document.querySelector('#form-content');
-    var fcategory = document.querySelector('#form-category');
-    var fkeywords = document.querySelector('#form-keywords');
-    //保存文章
-    var article_save = document.querySelector('.artic-save');
-    var article_down = document.querySelector('.artic-down');
-    //保存状态
-    var sub = document.querySelector('.sub');
-    //发布文章
-    var article_post = document.querySelector('.artic-post');
-    var mail = document.querySelector('#email');
-    //新增文章id
-    var articlenum = 1;
-    //预览
-    var effectPreview = document.querySelector('.effect-preview');
-    var codePreview = document.querySelector('.code-preview');
-    var obj = {
-        id: articlenum,
-        title: '',
-        content: '',
-        category: '',
-        keywords: '',
-        is_save: false
+    marked_1 = __importDefault(marked_1);
+    clipboard_1 = __importDefault(clipboard_1);
+    if (clipboard_1.default.isSupported()) {
+        new clipboard_1.default('li');
+    }
+    var ajax_text = function (dom, url, data, method) {
+        if (method === void 0) { method = "POST"; }
+        return dom.ajax({
+            url: url,
+            data: data,
+            method: method,
+            type: "JSON"
+        });
     };
-    /**
-     * 文章书写初始化
-     * 新增文章与添加文件调用
-     */
-    var article_init = function () {
-        ftitle.setAttribute('readonly', true);
-        fcontent.setAttribute('readonly', true);
-        fcategory.setAttribute('readonly', true);
-        fkeywords.setAttribute('readonly', true);
-        setTimeout(function () {
-            indexedDB_1.idb.count(function (e) {
-                articlenum = e.data.result + 1;
-                obj.id = articlenum;
-            });
-            ftitle.removeAttribute('readonly');
-            fcontent.removeAttribute('readonly');
-            fcategory.removeAttribute('readonly');
-            fkeywords.removeAttribute('readonly');
-            list_article(function (e) {
-                jquery_1.default("#c-left ul").empty();
-                jquery_1.default("#c-left ul").append(e);
-            });
-        }, 1000);
-        ftitle.value = '';
-        fcontent.value = '';
-        fcategory.value = '';
-        fkeywords.value = '';
+    exports.ajax_text = ajax_text;
+    var ajax_file = function (dom, url, data) {
+        return dom.ajax({
+            url: url,
+            data: data,
+            method: "POST",
+            type: "JSON",
+            processData: false,
+            contentType: false,
+        });
     };
-    var time_id = null;
-    var delay_save = function (key, box) {
-        if (time_id != null) {
-            clearTimeout(time_id);
+    exports.ajax_file = ajax_file;
+    var article_list_html = function (data) {
+        var str = "";
+        for (var i in data) {
+            str += "\n        <li>\n            <div class=\"article-item\">\n                <div class=\"title\"><a href=\"javascript:void(0)\" data-article-id=" + data[i].id + ">" + data[i].title + "</a></div>\n                <div>\u5206\u7C7B:" + data[i].categories + "</div>\n                <div>\u5173\u952E\u5B57:" + data[i].keywords + "</div>\n                <div>\u65F6\u95F4:</div>\n            </div>\n        </li>\n        ";
         }
-        time_id = setTimeout(function () {
-            //保存状态
-            sub.style.display = 'block';
-            obj.is_save = false;
-            var val = box.value;
-            if (val !== '') {
-                obj[key] = val;
-                indexedDB_1.idb.add(obj, articlenum, function (e) {
-                    style_1.alerter(e.msg);
-                });
-            }
-            if (key === 'content') {
-                effectPreview.innerHTML = md_1.md(val);
-                codePreview.value = md_1.md(val);
-            }
+        return str;
+    };
+    exports.article_list_html = article_list_html;
+    var images_list_html = function (data, marker) {
+        if (marker === void 0) { marker = ""; }
+        var str = "";
+        for (var i in data) {
+            str += "<li title=\"\u70B9\u51FB\u590D\u5236\" data-clipboard-text=\"//" + data[i].key + "\"><img src=\"//" + data[i].key + "\"></li>";
+        }
+        if (marker) {
+            str += "<b class=\"loading\" data-qiniu-marker=\"" + marker + "\">\u52A0\u8F7D\u66F4\u591A</b>";
+        }
+        return str;
+    };
+    exports.images_list_html = images_list_html;
+    var _time = null;
+    var delay_save = function (dom, key) {
+        if (_time != null) {
+            clearTimeout(_time);
+        }
+        _time = setTimeout(function () {
+            dom(".sub").css({ "display": "block" });
+            var val = dom("#form-content").val();
+            dom(".code-preview").val(marked_1.default(val));
+            dom(".effect-preview").val(marked_1.default(val));
         }, 1000);
     };
     exports.delay_save = delay_save;
-    /**
-     * 编辑文章
-     */
-    var action = function () {
-        indexedDB_1.idb.connect('article');
-        article_init();
-        ftitle.addEventListener("keydown", function (e) {
-            delay_save('title', ftitle);
-        });
-        fcontent.addEventListener("keydown", function (e) {
-            delay_save('content', fcontent);
-        });
-        fcategory.addEventListener("keydown", function (e) {
-            delay_save('category', fcategory);
-        });
-        fkeywords.addEventListener("keydown", function (e) {
-            delay_save('keywords', fkeywords);
-        });
-        article_save.addEventListener("click", function (e) {
-            save_article();
-        });
-        article_post.addEventListener("click", function () {
-            post_article();
-        });
-        jquery_1.default('#c-left').on('click', 'a', function (e) {
-            var article_id = e.target.dataset.articleId;
-            indexedDB_1.idb.read(parseInt(article_id), function (res) {
-                if (res.code == 2001) {
-                    var article_2 = res.data.result;
-                    ftitle.value = article_2.title;
-                    fcontent.value = article_2.content;
-                    fcategory.value = article_2.category;
-                    fkeywords.value = article_2.keywords;
-                    obj.id = article_2.id;
-                    obj.title = article_2.title;
-                    obj.content = article_2.content;
-                    obj.category = article_2.category;
-                    obj.keywords = article_2.keywords;
-                    articlenum = article_2.id;
-                    effectPreview.innerHTML = md_1.md(article_2.content);
-                    codePreview.value = md_1.md(article_2.content);
-                }
-                else {
-                    style_1.alerter(res.msg);
-                }
-            });
-        });
+    var alerter = function (dom, msg) {
+        dom(".alerter-content").text(msg);
+        dom(".alerter").css({ "display": "block" });
+        dom(".alerter").fadeOut(3000);
+        dom(".add").hide();
+        dom(".save").hide();
+        dom(".post").hide();
+        dom(".images").hide();
+        dom(".shade").hide();
     };
-    exports.action = action;
-    /**
-     * 保存文章
-     */
-    var save_article = function () {
-        if (obj.title == '') {
-            style_1.alerter('标题不能为空！');
-        }
-        else if (obj.content == '') {
-            style_1.alerter('内容不能为空！');
-        }
-        else if (obj.category == '') {
-            style_1.alerter('分类不能为空！');
-        }
-        else if (obj.keywords == '') {
-            style_1.alerter('关键字不能为空！');
-        }
-        else {
-            //保存状态
-            sub.style.display = 'none';
-            obj.is_save = true;
-            article_1.article.add(obj);
-            indexedDB_1.idb.add(obj, articlenum, function (e) {
-                style_1.alerter(e.msg);
-            });
-        }
-    };
-    /**
-     * 发布文章
-     */
-    var post_article = function () {
-        if (!obj.is_save) {
-            style_1.alerter('请先保存文章！');
-        }
-        else if (mail.value == '') {
-            style_1.alerter('邮箱不能为空！');
-        }
-        else {
-            var data = {
-                url: "http://static.codeinfo.top/mail/index/send",
-                data: {
-                    author: 'gzwawj.',
-                    title: obj.title,
-                    content: md_1.md(obj.content),
-                    email: mail.value
-                },
-                method: 'POST'
-            };
-            request_1.req.text(data, function (e) {
-                style_1.alerter(e.msg);
-            });
-        }
-    };
-    var list_article = function (func) {
-        indexedDB_1.idb.lst(1, function (e) {
-            if (e.code = 2001) {
-                var str = "";
-                var data = e.data.result;
-                for (var i in data) {
-                    str += "\n                    <li>\n                        <div class=\"article-item\">\n                            <div class=\"title\"><a href=\"javascript:void(0)\" data-article-id=" + data[i].id + ">" + data[i].title + "</a></div>\n                            <div>\u5206\u7C7B:" + data[i].category + "</div>\n                            <div>\u5173\u952E\u5B57:" + data[i].keywords + "</div>\n                            <div>\u65F6\u95F4:</div>\n                        </div>\n                    </li>";
-                }
-                func(str);
-            }
-            else {
-                style_1.alerter(e.msg);
-            }
-        });
-    };
-    exports.list_article = list_article;
+    exports.alerter = alerter;
 });

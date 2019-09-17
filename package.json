@@ -20,7 +20,9 @@
     "@types/jquery": "^3.3.31",
     "@types/js-yaml": "^3.12.1",
     "@types/marked": "^0.6.5",
+    "@types/nodemailer": "^6.2.1",
     "@types/yaml": "^1.0.2",
+    "nodemailer": "^6.3.0",
     "sqlite3": "^4.1.0",
     "tsnode-express": "^0.1.2",
     "yaml": "^1.6.0"

@@ -1,2 +1,0 @@
-/*! This is uglify test - 2019-09-15 */
-var __importDefault=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};define(["require","exports","./style","./action","./file","clipboard"],function(e,t,i,u,l,r){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),r=__importDefault(r),i.init(),u.action(),l.file(),r.default.isSupported()&&new r.default("li")});

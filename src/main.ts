@@ -3,6 +3,7 @@ import express from "express"
 import { Application } from "tsnode-express"
 
 import "./article.controller"
+import "./email.controller"
 
 const application = new Application();
 
