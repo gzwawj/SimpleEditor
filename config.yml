@@ -6,3 +6,8 @@ mail:
   port: 25
   user: "15512134812@163.com"
   pass: "xxxxxxxx"
+qiniu:
+  accessKey: "accessKey"
+  secretKey: "secretKey"
+  bucket: "bucket"
+  limit: 2
