@@ -26,8 +26,8 @@ $(".shade").on("click", function () {
     $(".images").hide()
     $(".shade").hide()
 })
-//获取文章
 $(function () {
+    //获取文章
     ajax_text($, "http://localhost:3000/article", {}, "GET").then(
         data => {
             if (data.code == 2001) {
@@ -35,6 +35,16 @@ $(function () {
                 $(".article-list").append(str)
             }
             alerter($, data.msg)
+        }
+    )
+    //获取图片
+    ajax_text($, `http://localhost:3000/qiniu`, {}).then(
+        data => {
+            if (data.code == 2001) {
+                $('.images-list').empty()
+                let str = images_list_html(data.data)
+                $('.images-list').append(str)
+            }
         }
     )
 })
@@ -48,6 +58,7 @@ $(".article-list").on("click", "a", function (e) {
                 $("#form-content").val(data.data.content)
                 $("#form-categories").val(data.data.categories)
                 $("#form-keywords").val(data.data.keywords)
+                delay_save($)
             }
             alerter($, data.msg)
         }
@@ -91,13 +102,23 @@ $(".artic-down").on("click", function () {
 })
 //发布文章
 $(".artic-post").on("click", function () {
-    let email = $("#email").val()
-    let obj = {
-        email: '',
-        title: '',
-        content: ''
-    }
+    let email = $("#email").val(), title = $("#form-title").val(), content = $("#form-content").val()
     // 发布文章
+    if (email === "" || title === "" || content === "") {
+        alerter($, "邮箱地址、标题、内容不能为空")
+    } else {
+        ajax_text($, `http://localhost:3000/email`, {
+            email: email,
+            title: title,
+            content: content
+        }).then(
+            data => {
+                if (data.code == 2001) {
+                    alerter($, data.msg)
+                }
+            }
+        )
+    }
 })
 //添加图片
 $(".add-img").on("click", function () {
@@ -106,20 +127,40 @@ $(".add-img").on("click", function () {
         let name = e.target.value.substring(e.target.value.lastIndexOf("\\") + 1)
         $(".img-name").text(name ? name : "选择文件")
     })
-    //获取图片
-    // $('.images-list').empty()
-    // let str = images_list_html(data,marker)
-    // $('.images-list').append(str)
 })
 $(".img-upload").on("click", function () {
     let file: any = document.querySelector("#img-file")
-    console.log(file.files)
+    let formData = new FormData()
+    formData.append("qiniufile", file.files[0])
+    ajax_file($, `http://localhost:3000/qiniu/addfile`, formData).then(
+        data => {
+            if (data.code == 2001) {
+                alerter($, data.msg)
+            }
+        }
+    )
 })
 $(".move-left").on("click", function () {
     $(".images-items").css({ "left": "0" })
 })
 $(".move-right").on("click", function () {
     $(".images-items").css({ "left": "-600px" })
+})
+$(".images-list").on("click", ".loading", function (e) {
+    let marker = e.target.dataset.qiniuMarker
+    ajax_text($, `http://localhost:3000/qiniu`, { marker: marker }).then(
+        data => {
+            if (data.code == 2001) {
+                $('.images-list').empty()
+                let str = images_list_html(data.data)
+                $('.images-list').append(str)
+            }
+        }
+    )
+})
+//编辑文章
+$("#form-content").bind("keyup", function () {
+    delay_save($)
 })
 //全屏预览
 let _full = true

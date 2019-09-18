@@ -44,8 +44,9 @@ class QiniuController {
 			}
 		)
 	}
-	@Post('/addFile')
+	@Post('/addfile')
 	setQiniuFile(args: any) {
+		console.log(args.file)
 		let uploadToken = new qiniu.rs.PutPolicy({ scope: config.qiniu.bucket }).uploadToken(_qiniu_mac);
 		let formUploader = new qiniu.form_up.FormUploader(_qiniu_config);
 		let putExtra = new qiniu.form_up.PutExtra();

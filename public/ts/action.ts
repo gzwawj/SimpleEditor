@@ -38,18 +38,23 @@ let article_list_html = function (data: any) {
     }
     return str
 }
-let images_list_html = function (data: any, marker: string = "") {
+let _data = []
+let images_list_html = function (data: any) {
     let str: string = ""
-    for (let i in data) {
-        str += `<li title="点击复制" data-clipboard-text="//${data[i].key}"><img src="//${data[i].key}"></li>`
+    for (let i in data.items) {
+        _data.push(data.items[i])
     }
-    if (marker) {
-        str += `<b class="loading" data-qiniu-marker="${marker}">加载更多</b>`
+    for (let i in _data) {
+        let url = `//pic1.rencaixiu.cn/${_data[i].key}`
+        str += `<li title="点击复制" data-clipboard-text="${url}"><img src="${url}"></li>`
+    }
+    if (data.marker) {
+        str += `<b class="loading" data-qiniu-marker="${data.marker}">加载更多</b>`
     }
     return str
 }
 let _time: any = null
-let delay_save = function (dom: any, key: string) {
+let delay_save = function (dom: any) {
     if (_time != null) {
         clearTimeout(_time);
     }
@@ -57,8 +62,8 @@ let delay_save = function (dom: any, key: string) {
         dom(".sub").css({ "display": "block" })
         let val = dom("#form-content").val()
         dom(".code-preview").val(marked(val))
-        dom(".effect-preview").val(marked(val))
-    }, 1000);
+        dom(".effect-preview").html(marked(val))
+    }, 300);
 }
 let alerter = function (dom: any, msg: string) {
     dom(".alerter-content").text(msg)

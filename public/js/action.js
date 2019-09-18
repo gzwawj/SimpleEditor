@@ -38,20 +38,24 @@ define(["require", "exports", "marked", "clipboard"], function (require, exports
         return str;
     };
     exports.article_list_html = article_list_html;
-    var images_list_html = function (data, marker) {
-        if (marker === void 0) { marker = ""; }
+    var _data = [];
+    var images_list_html = function (data) {
         var str = "";
-        for (var i in data) {
-            str += "<li title=\"\u70B9\u51FB\u590D\u5236\" data-clipboard-text=\"//" + data[i].key + "\"><img src=\"//" + data[i].key + "\"></li>";
+        for (var i in data.items) {
+            _data.push(data.items[i]);
         }
-        if (marker) {
-            str += "<b class=\"loading\" data-qiniu-marker=\"" + marker + "\">\u52A0\u8F7D\u66F4\u591A</b>";
+        for (var i in _data) {
+            var url = "//pic1.rencaixiu.cn/" + _data[i].key;
+            str += "<li title=\"\u70B9\u51FB\u590D\u5236\" data-clipboard-text=\"" + url + "\"><img src=\"" + url + "\"></li>";
+        }
+        if (data.marker) {
+            str += "<b class=\"loading\" data-qiniu-marker=\"" + data.marker + "\">\u52A0\u8F7D\u66F4\u591A</b>";
         }
         return str;
     };
     exports.images_list_html = images_list_html;
     var _time = null;
-    var delay_save = function (dom, key) {
+    var delay_save = function (dom) {
         if (_time != null) {
             clearTimeout(_time);
         }
@@ -59,8 +63,8 @@ define(["require", "exports", "marked", "clipboard"], function (require, exports
             dom(".sub").css({ "display": "block" });
             var val = dom("#form-content").val();
             dom(".code-preview").val(marked_1.default(val));
-            dom(".effect-preview").val(marked_1.default(val));
-        }, 1000);
+            dom(".effect-preview").html(marked_1.default(val));
+        }, 300);
     };
     exports.delay_save = delay_save;
     var alerter = function (dom, msg) {

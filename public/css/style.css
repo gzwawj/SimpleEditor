@@ -490,6 +490,7 @@ table {
 .images .images-items .images-item li img {
   height: 100%;
   width: 100%;
+  object-fit: cover;
 }
 .images .images-items .images-item p {
   margin: 30px auto 10px auto;

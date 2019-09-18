@@ -28,14 +28,22 @@ define(["require", "exports", "jquery", "./action"], function (require, exports,
         jquery_1.default(".images").hide();
         jquery_1.default(".shade").hide();
     });
-    //获取文章
     jquery_1.default(function () {
+        //获取文章
         action_1.ajax_text(jquery_1.default, "http://localhost:3000/article", {}, "GET").then(function (data) {
             if (data.code == 2001) {
                 var str = action_1.article_list_html(data.data);
                 jquery_1.default(".article-list").append(str);
             }
             action_1.alerter(jquery_1.default, data.msg);
+        });
+        //获取图片
+        action_1.ajax_text(jquery_1.default, "http://localhost:3000/qiniu", {}).then(function (data) {
+            if (data.code == 2001) {
+                jquery_1.default('.images-list').empty();
+                var str = action_1.images_list_html(data.data);
+                jquery_1.default('.images-list').append(str);
+            }
         });
     });
     jquery_1.default(".article-list").on("click", "a", function (e) {
@@ -47,6 +55,7 @@ define(["require", "exports", "jquery", "./action"], function (require, exports,
                 jquery_1.default("#form-content").val(data.data.content);
                 jquery_1.default("#form-categories").val(data.data.categories);
                 jquery_1.default("#form-keywords").val(data.data.keywords);
+                action_1.delay_save(jquery_1.default);
             }
             action_1.alerter(jquery_1.default, data.msg);
         });
@@ -88,13 +97,22 @@ define(["require", "exports", "jquery", "./action"], function (require, exports,
     });
     //发布文章
     jquery_1.default(".artic-post").on("click", function () {
-        var email = jquery_1.default("#email").val();
-        var obj = {
-            email: '',
-            title: '',
-            content: ''
-        };
+        var email = jquery_1.default("#email").val(), title = jquery_1.default("#form-title").val(), content = jquery_1.default("#form-content").val();
         // 发布文章
+        if (email === "" || title === "" || content === "") {
+            action_1.alerter(jquery_1.default, "邮箱地址、标题、内容不能为空");
+        }
+        else {
+            action_1.ajax_text(jquery_1.default, "http://localhost:3000/email", {
+                email: email,
+                title: title,
+                content: content
+            }).then(function (data) {
+                if (data.code == 2001) {
+                    action_1.alerter(jquery_1.default, data.msg);
+                }
+            });
+        }
     });
     //添加图片
     jquery_1.default(".add-img").on("click", function () {
@@ -103,20 +121,36 @@ define(["require", "exports", "jquery", "./action"], function (require, exports,
             var name = e.target.value.substring(e.target.value.lastIndexOf("\\") + 1);
             jquery_1.default(".img-name").text(name ? name : "选择文件");
         });
-        //获取图片
-        // $('.images-list').empty()
-        // let str = images_list_html(data,marker)
-        // $('.images-list').append(str)
     });
     jquery_1.default(".img-upload").on("click", function () {
         var file = document.querySelector("#img-file");
-        console.log(file.files);
+        var formData = new FormData();
+        formData.append("qiniufile", file.files[0]);
+        action_1.ajax_file(jquery_1.default, "http://localhost:3000/qiniu/addfile", formData).then(function (data) {
+            if (data.code == 2001) {
+                action_1.alerter(jquery_1.default, data.msg);
+            }
+        });
     });
     jquery_1.default(".move-left").on("click", function () {
         jquery_1.default(".images-items").css({ "left": "0" });
     });
     jquery_1.default(".move-right").on("click", function () {
         jquery_1.default(".images-items").css({ "left": "-600px" });
+    });
+    jquery_1.default(".images-list").on("click", ".loading", function (e) {
+        var marker = e.target.dataset.qiniuMarker;
+        action_1.ajax_text(jquery_1.default, "http://localhost:3000/qiniu", { marker: marker }).then(function (data) {
+            if (data.code == 2001) {
+                jquery_1.default('.images-list').empty();
+                var str = action_1.images_list_html(data.data);
+                jquery_1.default('.images-list').append(str);
+            }
+        });
+    });
+    //编辑文章
+    jquery_1.default("#form-content").bind("keyup", function () {
+        action_1.delay_save(jquery_1.default);
     });
     //全屏预览
     var _full = true;
